@@ -2,6 +2,10 @@
 
 class MiniBoard:
     # 3×3の盤面
+    def flatten(self):
+        # 現在の盤面を整数のリストにする
+        return self.mini_board
+
     def mark(self, pos, player):
         # idx番目のマス目にplayerの手を打つ
         self.mini_board = player
@@ -29,6 +33,15 @@ class MiniBoard:
 
 class Board:
     # 盤面
+    def flatten(self):
+        # 現在の盤面を整数のリストにする
+        board = sum([mini_board.flatten() for mini_board in  self.mini_boards], [])
+        return board
+
+    def legal_moves(self):
+        # 合法手のリストを生成する
+        pass
+
     def board_to_miniboard(self, pos):
         # boardのindexを(miniboard番号, miniboardのindex)に変換する
         mini_num, mini_pos = pos / 9, pos % 9
