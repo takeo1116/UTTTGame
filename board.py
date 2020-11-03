@@ -10,9 +10,9 @@ class MiniBoard:
         # idx番目のマス目にplayerの手を打つ
         self.mini_board = player
 
-    def check(self):
+    def check_state(self):
         # 終了しているかどうかをチェックする
-        # -1:終了, 0:続行 1:1の勝ち, 2:2の勝ち
+        # 0:続行 1:プレイヤー1の勝ち 2:プレイヤー2の勝ち 3:引き分け
         if self.state != 0:
             return self.state
         bingo = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6),
@@ -22,7 +22,7 @@ class MiniBoard:
                 self.state = self.mini_board[a]
                 return self.state
         if 0 not in self.mini_board:
-            self.state = -1
+            self.state = 3
             return self.state
         return 0
 
@@ -40,7 +40,13 @@ class Board:
 
     def legal_moves(self):
         # 合法手のリストを生成する
-        pass
+        legal = [pos for pos, state in enumerate(self.flatten()) if state == 0]
+        return legal
+
+    def check_state(self):
+        # 終了しているかどうかをチェックする
+        # 0:続行 1:プレイヤー1の勝ち 2:プレイヤー2の勝ち 3:引き分け
+        return self.big_board.check_state()
 
     def board_to_miniboard(self, pos):
         # boardのindexを(miniboard番号, miniboardのindex)に変換する
@@ -50,7 +56,10 @@ class Board:
     def mark(self, pos, player):
         # idx番目のマス目にplayerの手を打つ
         mini_num, mini_pos = self.board_to_miniboard(pos)
-        self.mini_boards[mini_num].mark(mini_pos)
+        self.mini_boards[mini_num].mark(mini_pos, player)
+        mini_result = self.mini_boards[mini_num].check_state()
+        if mini_result != 0:
+            self.big_board.mark(mini_num, player)
 
     def __init__(self):
         self.mini_boards = [MiniBoard() for _ in range(9)]  # 3×3の小盤面
