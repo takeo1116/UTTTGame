@@ -8,7 +8,7 @@ class LocalBoard:
 
     def mark(self, pos, player):
         # idx番目のマス目にplayerの手を打つ
-        self.local_board = player
+        self.local_board[pos] = player
 
     def check_state(self):
         # 終了しているかどうかをチェックする
@@ -50,7 +50,7 @@ class Board:
 
     def board_to_localboard(self, pos):
         # boardのindexを(localboard番号, localboardのindex)に変換する
-        local_num, local_pos = pos / 9, pos % 9
+        local_num, local_pos = pos // 9, pos % 9
         return (local_num, local_pos)
 
     def mark(self, pos, player):
