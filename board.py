@@ -35,12 +35,20 @@ class Board:
     # 盤面
     def flatten(self):
         # 現在の盤面を整数のリストにする
-        board = sum([local_board.flatten() for local_board in  self.local_boards], [])
+        board = sum([local_board.flatten()
+                     for local_board in self.local_boards], [])
         return board
 
-    def legal_moves(self):
+    def legal_moves(self, prev_move):
         # 合法手のリストを生成する
-        legal = [pos for pos, state in enumerate(self.flatten()) if state == 0]
+        legal_area = prev_move % 9
+        legal = []
+        if prev_move == -1 or self.grobal_board.flatten()[legal_area] != 0:
+            legal = [pos for pos, state in enumerate(
+                self.flatten()) if state == 0]
+        else:
+            legal = [legal_area*9 + pos for pos,
+                     state in enumerate(self.flatten()[legal_area * 9: legal_area * 9 + 9]) if state == 0]
         return legal
 
     def check_state(self):
@@ -59,7 +67,7 @@ class Board:
         self.local_boards[local_num].mark(local_pos, player)
         local_result = self.local_boards[local_num].check_state()
         if local_result != 0:
-            self.grobal_board.mark(local_num, player)
+            self.grobal_board.mark(local_num, local_result)
 
     def __init__(self):
         self.local_boards = [LocalBoard() for _ in range(9)]  # 3×3の小盤面

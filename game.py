@@ -3,12 +3,16 @@
 from board import Board
 from random_agent import RandomAgent
 
+
 class Game:
     # Ultimate Tic Tac Toeのゲームをシミュレートする
     def process_game(self):
         # ゲームを一手進める
         flat_board = self.board.flatten()
-        legal_moves = self.board.legal_moves()
+        prev_move = -1
+        if len(self.game_record) > 0:
+            _, prev_move = self.game_record[-1]
+        legal_moves = self.board.legal_moves(prev_move)
         # now_playerに手を聞く
         move = self.players[self.now_player - 1].request_move(
             flat_board.copy(), legal_moves.copy(), self.now_player)
@@ -17,21 +21,28 @@ class Game:
             self.game_state = self.now_player ^ 3
         # 手を反映させる
         self.board.mark(move, self.now_player)
+        self.game_record.append((flat_board, move))
         # ゲーム終了かどうか判定
         if self.game_state == 0:
             self.game_state = self.board.check_state()
             self.now_player = self.now_player ^ 3
 
+    def undo_game(self):
+        # ゲームを一手戻す
+        pass
+
     def play(self):
         # 1ゲームシミュレートする（いい関数名？）
         while self.game_state == 0:
             self.process_game()
-            print(self.now_player)
         # ゲーム終了したら、それぞれのエージェントに結果を返す
         flat_board = self.board.flatten()
         self.players[0].game_end(flat_board, 1, self.game_state)
         self.players[1].game_end(flat_board, 2, self.game_state)
+
         self.print_board()
+        print(self.board.grobal_board.flatten())
+        print(self.game_state)
 
     def constract_agent(self, agent_name):
         # エージェントの名前から新品のインスタンスを返す
@@ -42,21 +53,23 @@ class Game:
 
     def print_board(self):
         # コンソールに盤面を出力する
+        nums = [0, 1, 2, 9, 10, 11, 18, 19, 20]
         flat_board = self.board.flatten()
-        for i in range(0, 81, 9):
-            row = ""
-            for j in range(9):
-                row += str(flat_board[i + j])
-                if j in [2, 5]:
-                    row += " "
-            print(row)
-            if i in [18, 45]:
+        for row in range(9):
+            string = ""
+            for idx, num in enumerate(nums):
+                string += str(flat_board[num + 3 * row + row // 3 * 18])
+                if idx in [2, 5]:
+                    string += " "
+            print(string)
+            if row in [2, 5]:
                 print()
-
 
     def __init__(self, agent_name_1, agent_name_2):
         # players = [agent1, agent2]
         self.board = Board()
         self.now_player = 1
-        self.players = [self.constract_agent(agent_name_1), self.constract_agent(agent_name_2)]
+        self.players = [self.constract_agent(
+            agent_name_1), self.constract_agent(agent_name_2)]
         self.game_state = 0  # 0:ゲーム進行中, 1:player1の勝ち, 2:player2の勝ち
+        self.game_record = []   # 棋譜[(flat_board, move)]
