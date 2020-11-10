@@ -66,8 +66,11 @@ class Board:
         local_num, local_pos = self.board_to_localboard(pos)
         self.local_boards[local_num].mark(local_pos, player)
         local_result = self.local_boards[local_num].check_state()
-        if local_result != 0:
-            self.grobal_board.mark(local_num, local_result)
+        self.grobal_board.mark(local_num, local_result)
+
+    def unmark(self, pos):
+        # idx番目のマス目に書いてあるマークを消す
+        self.mark(pos, 0)
 
     def __init__(self):
         self.local_boards = [LocalBoard() for _ in range(9)]  # 3×3の小盤面
