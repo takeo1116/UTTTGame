@@ -3,6 +3,7 @@
 from .board import Board
 # from random_agent import RandomAgent
 from agent.random_agent import RandomAgent
+from agent.mcts_agent import MctsAgent
 
 
 class Game:
@@ -53,6 +54,8 @@ class Game:
         # エージェントの名前から新品のインスタンスを返す
         if agent_name == "RandomAgent":
             return RandomAgent()
+        elif agent_name == "MctsAgent":
+            return MctsAgent()
         else:
             return None
 

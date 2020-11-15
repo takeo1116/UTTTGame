@@ -2,6 +2,6 @@
 
 from engine.game import Game
 
-game = Game("RandomAgent", "RandomAgent")
+game = Game("MctsAgent", "RandomAgent")
 print(game.play())
 game.print_board()
