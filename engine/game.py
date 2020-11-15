@@ -1,7 +1,8 @@
 # coding:utf-8
 
-from board import Board
-from random_agent import RandomAgent
+from .board import Board
+# from random_agent import RandomAgent
+from agent.random_agent import RandomAgent
 
 
 class Game:
@@ -46,9 +47,7 @@ class Game:
         flat_board = self.board.flatten()
         self.players[0].game_end(flat_board, 1, self.game_state)
         self.players[1].game_end(flat_board, 2, self.game_state)
-
-        self.print_board()
-        print(["processing", "player 1 win", "player 2 win", "draw"][self.game_state])
+        return ["processing", "player 1 win", "player 2 win", "draw"][self.game_state]
 
     def constract_agent(self, agent_name):
         # エージェントの名前から新品のインスタンスを返す
@@ -70,6 +69,10 @@ class Game:
             print(string)
             if row in [2, 5]:
                 print()
+
+    def gat_record(self):
+        # 棋譜を取得する
+        return self.game_record
 
     def __init__(self, agent_name_1, agent_name_2):
         # players = [agent1, agent2]

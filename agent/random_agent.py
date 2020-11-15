@@ -1,7 +1,7 @@
 # coding:utf-8
 
 import random
-from agentbase import AgentBase
+from .agentbase import AgentBase
 
 
 class RandomAgent(AgentBase):
