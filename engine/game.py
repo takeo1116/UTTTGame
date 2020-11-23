@@ -4,6 +4,7 @@ from .board import Board
 # from random_agent import RandomAgent
 from agent.random_agent import RandomAgent
 from agent.mcts_agent import MctsAgent
+import time
 
 
 class Game:
@@ -28,6 +29,7 @@ class Game:
         if self.game_state == 0:
             self.game_state = self.board.check_state()
             self.now_player = self.now_player ^ 3
+
         return True
 
     def undo_game(self):
@@ -41,6 +43,7 @@ class Game:
         return True
 
     def play(self):
+        start = time.time()
         # 1ゲームシミュレートする
         while self.game_state == 0:
             self.process_game()
@@ -48,14 +51,19 @@ class Game:
         flat_board = self.board.flatten()
         self.players[0].game_end(flat_board, 1, self.game_state)
         self.players[1].game_end(flat_board, 2, self.game_state)
-        return ["processing", "player 1 win", "player 2 win", "draw"][self.game_state]
+        result = ["processing", "player 1 win", "player 2 win", "draw"][self.game_state]
+        elapsed_time = time.time() - start
+        print(f"{result} {elapsed_time} sec")
+        return result
 
     def constract_agent(self, agent_name):
+        options = agent_name.split("_")
         # エージェントの名前から新品のインスタンスを返す
-        if agent_name == "RandomAgent":
+        if options[0] == "RandomAgent":
             return RandomAgent()
-        elif agent_name == "MctsAgent":
-            return MctsAgent()
+        elif options[0] == "MctsAgent":
+            playout_num = int(options[1])
+            return MctsAgent(playout_num)
         else:
             return None
 
