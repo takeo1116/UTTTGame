@@ -28,7 +28,7 @@ class LocalBoard:
 
     def __init__(self, flat_board=None):
         # flat_boardに初期状態を入力可能
-        self.local_board = [0]*9 if flat_board is None else flat_board
+        self.local_board = [0] * 9 if flat_board is None else flat_board
         self.state = 0
         self.state = self.check_state()
 
@@ -77,6 +77,6 @@ class Board:
     def __init__(self, flat_board=None):
         # flat_boardに初期状態を入力可能
         self.local_boards = [LocalBoard() for _ in range(9)] if flat_board is None else [LocalBoard(
-            flat_board[i * 9:(i + 1) * 9]) for i in range(9)]  # 3x3の小盤面
+            flat_board[i * 9: (i + 1) * 9]) for i in range(9)]  # 3x3の小盤面
         self.grobal_board = LocalBoard(
             [local.check_state() for local in self.local_boards])    # 大きな盤面

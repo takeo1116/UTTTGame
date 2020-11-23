@@ -29,7 +29,6 @@ class Game:
         if self.game_state == 0:
             self.game_state = self.board.check_state()
             self.now_player = self.now_player ^ 3
-
         return True
 
     def undo_game(self):
@@ -51,7 +50,8 @@ class Game:
         flat_board = self.board.flatten()
         self.players[0].game_end(flat_board, 1, self.game_state)
         self.players[1].game_end(flat_board, 2, self.game_state)
-        result = ["processing", "player 1 win", "player 2 win", "draw"][self.game_state]
+        result = ["processing", "player 1 win",
+                  "player 2 win", "draw"][self.game_state]
         elapsed_time = time.time() - start
         print(f"{result} {elapsed_time} sec")
         return result
