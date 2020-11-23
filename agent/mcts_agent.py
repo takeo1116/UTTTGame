@@ -20,9 +20,20 @@ class MctsAgent(AgentBase):
         for pos in legal:
             next_board_num = self.game_tree[board_num][pos]
             win, num = self.win_rate[next_board_num]
-            value = win/(num + 1.0) + math.sqrt(2 * math.log(total_num) / num)
-            if value > max_value:
+            value = win / (num + 1.0) + math.sqrt(2 *
+                                                  math.log(total_num) / num)
+            if max_value < value:
                 move, max_value = pos, value
+        return move
+
+    def frequent_move(self, board_num, legal):
+        # シミュレーションでもっとも訪れた手を選択する
+        move, max_num = -1, -1
+        for pos in legal:
+            next_board_num = self.game_tree[board_num][pos]
+            _, num = self.win_rate[next_board_num]
+            if max_num < num:
+                move, max_num = pos, num
         return move
 
     def request_move(self, board, legal, player_num):
@@ -30,26 +41,43 @@ class MctsAgent(AgentBase):
         root_board = Board(board)
 
         # とりあえず100回プレイアウト
-        for play in range(100):
+        for _ in range(100):
             # プレイアウトしてrecordを作る
             now_board = copy.deepcopy(root_board)
             record = []
             now_player_num = player_num
             now_board_num, now_state = 0, 0
+            board_count = 1
+            randomed = False
             while now_state == 0:
-                now_legal_moves = now_board.legal_moves()
-                if win_rate[now_board_num][1] <= self.THRESHOLD:
-                    # ランダムで選択
-                    pass
+                now_legal = now_board.legal_moves()
+                move = -1
+                simurated_num = self.win_rate[now_board_num][1]
+                if randomed or simurated_num < self.THRESHOLD:
+                    move = self.random_move(now_legal)
+                    randomed |= True
                 else:
-                    # UCBで選択
-                    pass
+                    if simurated_num == self.THRESHOLD:
+                        # 展開する
+                        for pos in range(81):
+                            self.game_tree[now_board_num][pos] = board_count
+                            board_count += 1
+                    move = self.ucb_move(now_board_num, now_legal)
+                now_board.mark(move, now_player_num)
+                record.append((now_board_num, move, now_player_num))
+                if not randomed:
+                    now_board_num = self.game_tree[now_board_num][move]
                 now_player_num = now_player_num ^ 3
                 now_state = now_board.check_state()
 
-            # 更新する
+            # win_rateを更新する
+            for board_num, pos, player in record:
+                next_board_num = self.game_tree[board_num][pos]
+                win, num = self.win_rate[next_board_num]
+                self.win_rate[next_board_num] = (
+                    win + 1, num + 1) if now_state == player else (win, num + 1)
 
-        return random.choice(legal)
+        return self.frequent_move(0, legal)
 
     def game_end(self, board, player_num, result):
         pass
@@ -57,5 +85,7 @@ class MctsAgent(AgentBase):
     def __init__(self):
         self.THRESHOLD = 10
         self.max_board_num = 1
+        # game_tree[board_num][pos] = board_numの盤面で手番プレイヤーがposに打ったときに遷移するboardの番号
         self.game_tree = [[-1]*81]*10000
+        # win_rate[board_num] = (そのboardに遷移する手を打ったときの勝率, シミュレーションでそのboardにたどり着いた回数)
         self.win_rate = [(0, 0)]*10000
