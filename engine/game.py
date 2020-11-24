@@ -1,7 +1,6 @@
 # coding:utf-8
 
 from .board import Board
-# from random_agent import RandomAgent
 from agent.random_agent import RandomAgent
 from agent.mcts_agent import MctsAgent
 import time
