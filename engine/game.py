@@ -13,7 +13,7 @@ class Game:
         flat_board = self.board.flatten()
         prev_move = -1
         if len(self.game_record) > 0:
-            _, _, prev_move = self.game_record[-1]
+            _, _, _, prev_move = self.game_record[-1]
         legal_moves = self.board.legal_moves(prev_move)
         # now_playerに手を聞く
         move = self.players[self.now_player - 1].request_move(
@@ -23,7 +23,7 @@ class Game:
             self.game_state = self.now_player ^ 3
         # 手を反映させる
         self.board.mark(move, self.now_player)
-        self.game_record.append((flat_board, self.now_player, move))
+        self.game_record.append((flat_board, legal_moves, self.now_player, move))
         # ゲーム終了かどうか判定
         if self.game_state == 0:
             self.game_state = self.board.check_state()
@@ -35,7 +35,7 @@ class Game:
         # 戻せなかった場合Falseを返す
         if len(self.game_record) == 0:
             return False
-        _, prev_player, prev_pos = self.game_record.pop(-1)
+        _, _, prev_player, prev_pos = self.game_record.pop(-1)
         self.board.unmark(prev_pos)
         self.now_player = prev_player
         return True
@@ -91,4 +91,4 @@ class Game:
         self.players = [self.constract_agent(
             agent_name_1), self.constract_agent(agent_name_2)]
         self.game_state = 0  # 0:ゲーム進行中, 1:player1の勝ち, 2:player2の勝ち
-        self.game_record = []   # 棋譜[(flat_board, player, move)]
+        self.game_record = []   # 棋譜[(着手前のflat_board, legal, 着手したplayer, move)]
