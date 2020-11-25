@@ -80,7 +80,7 @@ class Game:
             if row in [2, 5]:
                 print()
 
-    def gat_record(self):
+    def get_record(self):
         # 棋譜を取得する
         return self.game_record
 
