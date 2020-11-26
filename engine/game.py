@@ -55,6 +55,11 @@ class Game:
         print(f"{result} {elapsed_time} sec")
         return result
 
+    def play_for_record(self):
+        # playしたあと(agent_names, record)を返す
+        self.play()
+        return (self.agent_names, self.game_record)
+
     def constract_agent(self, agent_name):
         options = agent_name.split("_")
         # エージェントの名前から新品のインスタンスを返す
@@ -80,14 +85,15 @@ class Game:
             if row in [2, 5]:
                 print()
 
-    def get_record(self):
-        # 棋譜を取得する
-        return self.game_record
+    def get_agent_names(self):
+        # playersを取得する
+        return self.agent_names
 
     def __init__(self, agent_name_1, agent_name_2):
         # players = [agent1, agent2]
         self.board = Board()
         self.now_player = 1
+        self.agent_names = [agent_name_1, agent_name_2]
         self.players = [self.constract_agent(
             agent_name_1), self.constract_agent(agent_name_2)]
         self.game_state = 0  # 0:ゲーム進行中, 1:player1の勝ち, 2:player2の勝ち
