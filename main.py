@@ -22,5 +22,5 @@ from record_maker import RecordMaker
 #         futures.append(executor.submit(games[idx].play))
 
 # 棋譜生成
-record_maker = RecordMaker("MctsAgent_1000", "RandomAgent", 1000, 20, "MCTS_1000_vs_Random_0")
+record_maker = RecordMaker("MctsAgent_1000", "RandomAgent", 100, 10, "MCTS_1000_vs_Random_test_2")
 record_maker.generate_records()
