@@ -1,8 +1,10 @@
 # coding:utf-8
 
 import os
+import json
 import concurrent.futures
 import random
+from collections import OrderedDict
 from engine.game import Game
 
 class RecordMaker():
@@ -20,17 +22,22 @@ class RecordMaker():
             for game in games:
                 futures.append(executor.submit(game.play_for_record))
         
-        # 各ゲームの棋譜をtxtファイルで出力する
-        path = f"./records/{self.dir_name}/{file_name}.txt"
+        # 各ゲームの棋譜をjsonファイルで出力する
+        records = []
+        for future in futures:
+            agent_names, data = future.result()
+            for board, legal, player, move in data:
+                # boardは常に自分が1で相手が2になるように出力する
+                record = OrderedDict()
+                record["agent"] = agent_names[player - 1]
+                record["board"] = board if player == 1 else [[0, 2, 1][mark] for mark in board]
+                record["legal"] = legal
+                record["move"] = move
+                records.append(record)
+
+        path = f"./records/{self.dir_name}/{file_name}.json"
         with open(path, mode="w") as f:
-            for future in futures:
-                agent_names, record = future.result()
-                for board, legal, player, move in record:
-                    # boardは常に自分が1で相手が2になるように出力する
-                    f.write(f"agent_name:{agent_names[player - 1]}\n")
-                    f.write(f"board:{board if player == 1 else [[0, 2, 1][mark] for mark in board]}\n")
-                    f.write(f"legal:{legal}\n")
-                    f.write(f"move:{move}\n")
+            json.dump(records, f)
     
     def generate_records(self):
         os.mkdir(f"./records/{self.dir_name}")
