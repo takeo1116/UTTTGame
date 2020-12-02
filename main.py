@@ -11,6 +11,7 @@ from record_maker import RecordMaker
 
 # record = game.get_record()
 # for rec in record:
+
 #     print(rec)
 
 # 並列対戦
@@ -21,5 +22,5 @@ from record_maker import RecordMaker
 #         futures.append(executor.submit(games[idx].play))
 
 # 棋譜生成
-record_maker = RecordMaker("MctsAgent_1000", "RandomAgent", 10, 10, "test")
+record_maker = RecordMaker("MctsAgent_1000", "RandomAgent", 1000, 20, "MCTS_1000_vs_Random_0")
 record_maker.generate_records()

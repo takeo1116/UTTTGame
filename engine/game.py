@@ -52,7 +52,7 @@ class Game:
         result = ["processing", "player 1 win",
                   "player 2 win", "draw"][self.game_state]
         elapsed_time = time.time() - start
-        print(f"{result} {elapsed_time} sec")
+        # print(f"{result} {elapsed_time} sec")
         return result
 
     def play_for_record(self):
