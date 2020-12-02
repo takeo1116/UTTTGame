@@ -21,7 +21,7 @@ class RecordMaker():
                 futures.append(executor.submit(game.play_for_record))
         
         # 各ゲームの棋譜をtxtファイルで出力する
-        path = f"./{self.dir_name}/{file_name}.txt"
+        path = f"./records/{self.dir_name}/{file_name}.txt"
         with open(path, mode="w") as f:
             for future in futures:
                 agent_names, record = future.result()
@@ -33,7 +33,7 @@ class RecordMaker():
                     f.write(f"move:{move}\n")
     
     def generate_records(self):
-        os.mkdir(f"./{self.dir_name}")
+        os.mkdir(f"./records/{self.dir_name}")
         for idx in range(self.batch_num):
             self.generate_record_file(self.batch_size, f"record_{idx}")
 
