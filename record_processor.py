@@ -9,8 +9,10 @@ class RecordProcessor():
     def convert_record(self, record):
         # recordを加工して、学習に使える教師データに変換する
         board, legal, move = record["board"], record["legal"], record["move"]
+        my_board = [1 if mark == 1 else 0 for mark in board]
+        op_board = [1 if mark == 2 else 0 for mark in board]
         legal_board = [1 if pos in legal else 0 for pos in range(81)]
-        datum = board + legal_board
+        datum = my_board + op_board + legal_board
         return (datum, move)
 
     def read_record_file(self, file_path):
@@ -38,7 +40,8 @@ class RecordProcessor():
 
     def sample(self, num):
         # num個のデータをランダムに取り出す
-        return random.sample(self.data, num)
+        data = random.sample(self.data, num)
+        return ([datum[0] for datum in data], [datum[1] for datum in data])
 
     def __init__(self, dir_path, agent_list):
         self.agent_list = agent_list    # 拾うエージェントのリスト
