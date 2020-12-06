@@ -31,6 +31,8 @@ def train(epoch):
 
     print(epoch)
 
-
 for idx in range(100):
     train(idx)
+
+model_path = "test.pth"
+torch.save(model.state_dict(), model_path)
