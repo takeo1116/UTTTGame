@@ -24,7 +24,8 @@ from record_processor import RecordProcessor
 #         futures.append(executor.submit(games[idx].play))
 
 # 棋譜生成
-record_maker = RecordMaker("MctsAgent_1000", "RandomAgent", 1000, 25, "MCTS_1000_vs_Random_2")
+record_maker = RecordMaker(
+    "MctsAgent_1000", "RandomAgent", 1000, 25, "MCTS_1000_vs_Random_5")
 record_maker.generate_records()
 
 # 棋譜読み込みテスト

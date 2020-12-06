@@ -42,9 +42,15 @@ class Game:
 
     def play(self):
         start = time.time()
-        # 1ゲームシミュレートする
-        while self.game_state == 0:
-            self.process_game()
+        try:
+            # 1ゲームシミュレートする
+            while self.game_state == 0:
+                self.process_game()
+        except Exception as e:
+            print("exception occured in game :")
+            print(type(e))
+            print(e)
+            return "Exception"
         # ゲーム終了したら、それぞれのエージェントに結果を返す
         flat_board = self.board.flatten()
         self.players[0].game_end(flat_board, 1, self.game_state)

@@ -25,15 +25,20 @@ class RecordMaker():
         # 各ゲームの棋譜をjsonファイルで出力する
         records = []
         for future in futures:
-            agent_names, data = future.result()
-            for board, legal, player, move in data:
-                # boardは常に自分が1で相手が2になるように出力する
-                record = OrderedDict()
-                record["agent"] = agent_names[player - 1]
-                record["board"] = board if player == 1 else [[0, 2, 1][mark] for mark in board]
-                record["legal"] = legal
-                record["move"] = move
-                records.append(record)
+            try:
+                agent_names, data = future.result()
+                for board, legal, player, move in data:
+                    # boardは常に自分が1で相手が2になるように出力する
+                    record = OrderedDict()
+                    record["agent"] = agent_names[player - 1]
+                    record["board"] = board if player == 1 else [[0, 2, 1][mark] for mark in board]
+                    record["legal"] = legal
+                    record["move"] = move
+                    records.append(record)
+            except Exception as e:
+                print("exception occured in future")
+                print(type(e))
+                print(e)
 
         path = f"./records/{self.dir_name}/{file_name}.json"
         with open(path, mode="w") as f:
