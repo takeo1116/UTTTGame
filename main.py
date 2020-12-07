@@ -7,7 +7,7 @@ from record_maker import RecordMaker
 from record_processor import RecordProcessor
 
 # 一戦
-# game = Game("MctsAgent_1000", "RandomAgent")
+# game = Game("MctsAgent_10000", "RandomAgent")
 # game.play()
 # game.print_board()
 
@@ -25,7 +25,7 @@ from record_processor import RecordProcessor
 
 # 棋譜生成
 record_maker = RecordMaker(
-    "MctsAgent_1000", "RandomAgent", 1000, 25, "MCTS_1000_vs_Random_5")
+    "MctsAgent_10000", "RandomAgent", 100, 25, "records/MCTS_10000_vs_Random/MCTS_10000_vs_Random_1")
 record_maker.generate_records()
 
 # 棋譜読み込みテスト

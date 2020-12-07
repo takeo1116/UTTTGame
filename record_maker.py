@@ -40,12 +40,12 @@ class RecordMaker():
                 print(type(e))
                 print(e)
 
-        path = f"./records/{self.dir_name}/{file_name}.json"
+        path = f"./{self.dir_name}/{file_name}.json"
         with open(path, mode="w") as f:
             json.dump(records, f)
     
     def generate_records(self):
-        os.mkdir(f"./records/{self.dir_name}")
+        os.mkdir(f"./{self.dir_name}")
         for idx in range(self.batch_num):
             self.generate_record_file(self.batch_size, f"record_{idx}")
 

@@ -5,8 +5,9 @@ from torch import nn, optim
 from torch.utils.data import TensorDataset, DataLoader
 from record_processor import RecordProcessor
 
-record_processor = RecordProcessor("./records/", ["MctsAgent_1000"])
-dataLoader = DataLoader(record_processor.dataset, batch_size=1024, shuffle=True)
+record_processor = RecordProcessor("./records/MCTS_1000_vs_Random", ["MctsAgent_1000"])
+dataLoader = DataLoader(record_processor.dataset, batch_size=1, shuffle=True)
+print(f"data_loaded:{len(dataLoader.dataset)}datas")
 
 model = nn.Sequential()
 model.add_module("fc1", nn.Linear(81*3, 100))
@@ -31,8 +32,25 @@ def train(epoch):
 
     print(epoch)
 
-for idx in range(100):
-    train(idx)
+def eval():
+    correct = 0
+    total = 0
+    model.eval()
 
-model_path = "test.pth"
-torch.save(model.state_dict(), model_path)
+    for board_tensor, move_tensor in dataLoader:
+        outputs = model(board_tensor)
+        _, predicted = torch.max(outputs.data, 1)
+        if predicted == move_tensor:
+            correct += 1
+        total += 1
+        print(predicted, move_tensor)
+        print(correct, total)
+
+# for idx in range(100):
+#     train(idx)
+
+# model_path = "models/test2.pth"
+# torch.save(model.state_dict(), model_path)
+
+# model.load_state_dict(torch.load(model_path))
+# eval()

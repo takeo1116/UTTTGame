@@ -40,11 +40,11 @@ class MctsAgent(AgentBase):
         # 現在の盤面から決まった回数プレイアウトして、一番良い手を返す
         root_board = Board(board)
         # game_tree[board_num][pos] = board_numの盤面で手番プレイヤーがposに打ったときに遷移するboardの番号
-        game_tree = [[-1] * 81 for _ in range(10000)]
+        game_tree = [[-1] * 81 for _ in range(60000)]
         # win_rate[board_num] = (そのboardに遷移する手を打ったときの勝率, シミュレーションでそのboardにたどり着いた回数)
-        win_rate = [(0, 0)] * 10000
+        win_rate = [(0, 0)] * 60000
         # visited_num[board_num] = そのboardを訪れた回数
-        visited_num = [0] * 10000
+        visited_num = [0] * 60000
         board_count = 1
         for _ in range(self.playout_num):
             # プレイアウトしてrecordを作る
