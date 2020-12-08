@@ -5,24 +5,17 @@ import json
 import random
 import torch
 from torch.utils.data import TensorDataset, DataLoader
+from learning.learning_util import convert_record
+
 
 class RecordProcessor():
-
-    def convert_record(self, record):
-        # recordを加工して、学習に使える教師データに変換する
-        board, legal, move = record["board"], record["legal"], record["move"]
-        my_board = [1 if mark == 1 else 0 for mark in board]
-        op_board = [1 if mark == 2 else 0 for mark in board]
-        legal_board = [1 if pos in legal else 0 for pos in range(81)]
-        board_data = my_board + op_board + legal_board
-        
-        return (board_data, move)
 
     def read_record_file(self, file_path):
         # file_pathで指定された棋譜ファイルを読んで、中身のデータを取り出す
         with open(file_path) as f:
             records = json.load(f)
-        data = [self.convert_record(record) for record in records if record["agent"] in self.agent_list]
+        data = [convert_record(
+            record) for record in records if record["agent"] in self.agent_list]
         return data
 
     def read_record_folder(self, dir_path):

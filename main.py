@@ -4,12 +4,12 @@ import concurrent.futures
 import os
 from engine.game import Game
 from record_maker import RecordMaker
-from record_processor import RecordProcessor
+from learning.record_processor import RecordProcessor
 
 # 一戦
-# game = Game("MctsAgent_10000", "RandomAgent")
-# game.play()
-# game.print_board()
+game = Game("SupervisedLearningAgent", "RandomAgent")
+game.play()
+game.print_board()
 
 # record = game.get_record()
 # for rec in record:
@@ -24,9 +24,9 @@ from record_processor import RecordProcessor
 #         futures.append(executor.submit(games[idx].play))
 
 # 棋譜生成
-record_maker = RecordMaker(
-    "MctsAgent_10000", "RandomAgent", 100, 25, "records/MCTS_10000_vs_Random/MCTS_10000_vs_Random_1")
-record_maker.generate_records()
+# record_maker = RecordMaker(
+#     "MctsAgent_10000", "RandomAgent", 100, 30, "records/MCTS_10000_vs_Random/MCTS_10000_vs_Random_4")
+# record_maker.generate_records()
 
 # 棋譜読み込みテスト
 # record_processor = RecordProcessor("./records", ["MctsAgent_1000"])

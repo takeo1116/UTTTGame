@@ -3,6 +3,7 @@
 from .board import Board
 from agent.random_agent import RandomAgent
 from agent.mcts_agent import MctsAgent
+from agent.supervised_learning_agent import SupervisedLearningAgent
 import time
 
 
@@ -58,7 +59,7 @@ class Game:
         result = ["processing", "player 1 win",
                   "player 2 win", "draw"][self.game_state]
         elapsed_time = time.time() - start
-        # print(f"{result} {elapsed_time} sec")
+        print(f"{result} {elapsed_time} sec")
         return result
 
     def play_for_record(self):
@@ -74,6 +75,8 @@ class Game:
         elif options[0] == "MctsAgent":
             playout_num = int(options[1])
             return MctsAgent(playout_num)
+        elif options[0] == "SupervisedLearningAgent":
+            return SupervisedLearningAgent("./models/test.pth")
         else:
             return None
 
