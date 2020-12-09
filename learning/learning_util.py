@@ -16,7 +16,7 @@ def convert_board(board, legal):
 def convert_record(record):
     # recordを加工して、学習に適した教師データに変換する
     board, legal, move = record["board"], record["legal"], record["move"]
-    board_data = self.convert_board(board, legal)
+    board_data = convert_board(board, legal)
     return (board_data, move)
 
 

@@ -7,9 +7,10 @@ from record_maker import RecordMaker
 from learning.record_processor import RecordProcessor
 
 # 一戦
-game = Game("SupervisedLearningAgent", "RandomAgent")
-game.play()
-game.print_board()
+# game = Game("SupervisedLearningAgent", "RandomAgent")
+# game = Game("RandomAgent", "SupervisedLearningAgent")
+# game.play()
+# game.print_board()
 
 # record = game.get_record()
 # for rec in record:
@@ -24,9 +25,9 @@ game.print_board()
 #         futures.append(executor.submit(games[idx].play))
 
 # 棋譜生成
-# record_maker = RecordMaker(
-#     "MctsAgent_10000", "RandomAgent", 100, 30, "records/MCTS_10000_vs_Random/MCTS_10000_vs_Random_4")
-# record_maker.generate_records()
+record_maker = RecordMaker(
+    "MctsAgent_10000", "MctsAgent_1000", 100, 30, "records/MCTS_10000_vs_MCTS_1000/MCTS_10000_vs_MCTS_1000_1")
+record_maker.generate_records()
 
 # 棋譜読み込みテスト
 # record_processor = RecordProcessor("./records", ["MctsAgent_1000"])
