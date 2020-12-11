@@ -2,5 +2,5 @@
 
 import tkinter
 
-root = tkinter.Tk()
-root.mainloop()
+# root = tkinter.Tk()
+# root.mainloop()
