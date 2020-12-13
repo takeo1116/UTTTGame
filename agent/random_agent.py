@@ -9,7 +9,7 @@ class RandomAgent(AgentBase):
         return random.choice(legal)
 
     def get_agentname(self):
-        return "RandomAgent_test"
+        return "RandomAgent"
 
     def game_end(self, board, player_num, result):
         pass
