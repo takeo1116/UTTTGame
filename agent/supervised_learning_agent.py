@@ -20,6 +20,9 @@ class SupervisedLearningAgent(AgentBase):
             print("illegal move!")
         return move
 
+    def get_agentname(self):
+        return "SupervisedLearningAgent"
+
     def game_end(self, board, player_num, result):
         pass
 

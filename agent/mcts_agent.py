@@ -87,6 +87,9 @@ class MctsAgent(AgentBase):
                     win + 1, num + 1) if now_state == player else (win, num + 1)
         return self.best_move(0, legal, game_tree, win_rate)
 
+    def get_agentname(self):
+        return f"MctsAgent_{self.playout_num}"
+
     def game_end(self, board, player_num, result):
         pass
 

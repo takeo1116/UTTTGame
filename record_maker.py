@@ -26,12 +26,12 @@ class RecordMaker():
         records = []
         for future in futures:
             try:
-                agent_names, data = future.result()
-                for board, legal, player, move in data:
+                data = future.result()
+                for player_idx, agent_name, board, legal, move in data:
                     # boardは常に自分が1で相手が2になるように出力する
                     record = OrderedDict()
-                    record["agent"] = agent_names[player - 1]
-                    record["board"] = board if player == 1 else [[0, 2, 1][mark] for mark in board]
+                    record["agent"] = agent_name
+                    record["board"] = board if player_idx == 1 else [[0, 2, 1][mark] for mark in board]
                     record["legal"] = legal
                     record["move"] = move
                     records.append(record)

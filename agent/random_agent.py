@@ -8,6 +8,9 @@ class RandomAgent(AgentBase):
     def request_move(self, board, legal, player_num):
         return random.choice(legal)
 
+    def get_agentname(self):
+        return "RandomAgent_test"
+
     def game_end(self, board, player_num, result):
         pass
 
