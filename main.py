@@ -26,7 +26,7 @@ from learning.record_processor import RecordProcessor
 
 # 棋譜生成
 record_maker = RecordMaker(
-    "RandomAgent", "MctsAgent_1000", 20, 10, "records/test")
+    "MixedAgent", "MixedAgent", 100, 10, "records/MixedAgent_vs_MixedAgent/MixedAgent_vs_MixedAgent_0")
 record_maker.generate_records()
 
 # 棋譜読み込みテスト

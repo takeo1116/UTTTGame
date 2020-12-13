@@ -17,7 +17,7 @@ class RecordMaker():
     def generate_record_file(self, battle_num, file_name):
         # battle_num回ゲームをシミュレートして、棋譜を記録する
         games = [self.make_game() for _ in range(battle_num)]
-        with concurrent.futures.ProcessPoolExecutor(max_workers=15) as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=12) as executor:
             futures = []
             for game in games:
                 futures.append(executor.submit(game.play_for_record))
