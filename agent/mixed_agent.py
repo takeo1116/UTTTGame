@@ -2,7 +2,8 @@
 
 import random
 from .agentbase import AgentBase
-from .agent_util import constract_agent
+from .random_agent import RandomAgent
+from .mcts_agent import MctsAgent
 
 class MixedAgent(AgentBase):
     # いくつかのエージェントをランダムに呼び出して着手する
@@ -18,6 +19,5 @@ class MixedAgent(AgentBase):
         pass
 
     def __init__(self):
-        self.AGENT_NAMES = ["RandomAgent", "MctsAgent_1000", "MctsAgent_5000", "MctsAgent_10000"]
-        self.agents = [constract_agent(agent_name) for agent_name in self.AGENT_NAMES]
+        self.agents = [RandomAgent(), MctsAgent(1000), MctsAgent(5000), MctsAgent(10000)]
         self.last_moved_agent = None    # 最後に着手したエージェントの名前

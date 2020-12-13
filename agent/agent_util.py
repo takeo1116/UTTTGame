@@ -3,6 +3,8 @@
 from .random_agent import RandomAgent
 from .mcts_agent import MctsAgent
 from .supervised_learning_agent import SupervisedLearningAgent
+from .mixed_agent import MixedAgent
+
 
 def constract_agent(agent_name):
     options = agent_name.split("_")
@@ -14,5 +16,7 @@ def constract_agent(agent_name):
         return MctsAgent(playout_num)
     elif options[0] == "SupervisedLearningAgent":
         return SupervisedLearningAgent("./models/test.pth")
+    elif options[0] == "MixedAgent":
+        return MixedAgent()
     else:
         return None

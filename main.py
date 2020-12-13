@@ -7,8 +7,7 @@ from record_maker import RecordMaker
 from learning.record_processor import RecordProcessor
 
 # 一戦
-# game = Game("SupervisedLearningAgent", "RandomAgent")
-# game = Game("RandomAgent", "SupervisedLearningAgent")
+# game = Game("MixedAgent", "RandomAgent")
 # game.play()
 # game.print_board()
 
