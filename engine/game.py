@@ -54,8 +54,8 @@ class Game:
         flat_board = self.board.flatten()
         self.players[0].game_end(flat_board, 1, self.game_state)
         self.players[1].game_end(flat_board, 2, self.game_state)
-        result = ["processing", "player 1 win",
-                  "player 2 win", "draw"][self.game_state]
+        result = ["processing", f"{self.agent_names[0]}(player 1) win",
+                  f"{self.agent_names[1]}(player 2) win", "draw"][self.game_state]
         elapsed_time = time.time() - start
         print(f"{result} {elapsed_time} sec")
         return result
