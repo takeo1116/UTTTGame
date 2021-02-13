@@ -2,15 +2,23 @@
 
 import torch
 from torch import nn, optim
+from .network import Network
 
 
 def convert_board(board, legal):
     # boardとlegalを学習、推論に適した形に変換する
+    # 9*9の盤面で、自分のマーク、相手のマーク、着手可能な場所の3チャネル
+
+    def reshape(board):
+        # boardの81要素を並べ変えて9*9の盤面（実際の盤面と同じ並び）を作る
+        row = [0, 1, 2, 9, 10, 11, 18, 19, 20]
+        column = [0, 3, 6, 27, 30, 33, 54, 57, 60]
+        return [[board[r + c] for r in row] for c in column]
+
     my_board = [1 if mark == 1 else 0 for mark in board]
     op_board = [1 if mark == 2 else 0 for mark in board]
     legal_board = [1 if pos in legal else 0 for pos in range(81)]
-    board_data = my_board + op_board + legal_board
-    return board_data
+    return [reshape(brd) for brd in [my_board, op_board, legal_board]]
 
 
 def convert_record(record):
@@ -22,11 +30,6 @@ def convert_record(record):
 
 def make_network():
     # モデルを作る
-    model = nn.Sequential()
-    model.add_module("fc1", nn.Linear(81*3, 100))
-    model.add_module("relu1", nn.ReLU())
-    model.add_module("fc2", nn.Linear(100, 100))
-    model.add_module("relu2", nn.ReLU())
-    model.add_module("fc3", nn.Linear(100, 81))
-
+    channels_num = 3
+    model = Network(channels_num)
     return model
