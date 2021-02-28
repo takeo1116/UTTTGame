@@ -14,9 +14,11 @@ class SupervisedLearningAgent(AgentBase):
         board_data = convert_board(normal_board, legal)
         inputs = torch.Tensor([board_data])
         outputs = self.model(inputs)
+        # print(outputs)
         move = torch.max(outputs[0].data, 0)[1].item()
         if move not in legal:
             print("illegal move!")
+        # print(legal, move)
         return move
 
     def get_agentname(self):

@@ -7,11 +7,22 @@ from torch.utils.data import TensorDataset, DataLoader
 
 class DatasetLoader():
 
-    def load_dataset(self, input_path):
+    def load_dataset(self, input_path, input_filename):
         # jsonファイルを読み込んで、datasetを作る
-        with open(input_path) as f:
+        with open(f"{input_path}/{input_filename}") as f:
             data = json.load(f)
-        
 
-    def __init__(self, input_path):
-        self.train, self.test = self.load_dataset()
+        board_data, move_data = [], []
+
+        for board, move in data:
+            board_data.append(board)
+            move_data.append(move)
+
+        board_tensor = torch.Tensor(board_data)
+        move_tensor = torch.LongTensor(move_data)
+
+        dataset = TensorDataset(board_tensor, move_tensor)
+        return dataset
+
+    def __init__(self, input_path, input_filename):
+        self.dataset = self.load_dataset(input_path, input_filename)
