@@ -12,10 +12,14 @@ class SupervisedLearningAgent(AgentBase):
     def request_move(self, board, legal, player_num):
         normal_board = board if player_num == 1 else [[0, 2, 1][mark] for mark in board]
         board_data = convert_board(normal_board, legal)
-        inputs = torch.Tensor([board_data])
-        outputs = self.model(inputs)
-        # print(outputs)
-        move = torch.max(outputs[0].data, 0)[1].item()
+        inputs = torch.Tensor([board_data]).cuda()
+        outputs = self.model(inputs).cuda()
+        scores = outputs[0].data.tolist()
+        nowScore, move = -1.0, -1
+        for idx, score in enumerate(scores):
+            if score > nowScore and idx in legal:
+                move = idx
+                nowScore = score
         if move not in legal:
             print("illegal move!")
         # print(legal, move)

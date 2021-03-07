@@ -8,6 +8,8 @@ from learning.record_processor import RecordProcessor
 from learning.learning_util import make_network
 from learning.dataset_loader import DatasetLoader
 
+# 乱数のseedを固定
+torch.manual_seed(11)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -26,7 +28,7 @@ print(
 model = make_network()
 # model.load_state_dict(torch.load("./models/test_10000.pth"))   # 初期値をロードするとき
 loss_fn = nn.CrossEntropyLoss()
-optimizer = optim.Adagrad(model.parameters(), lr=0.005)
+optimizer = optim.Adagrad(model.parameters(), lr=0.01)
 
 board_idxes = [0, 1, 2, 9, 10, 11, 18, 19, 20, 3, 4, 5, 12, 13, 14, 21, 22, 23, 6, 7, 8, 15, 16, 17, 24, 25, 26, 27, 28, 29, 36, 37, 38, 45, 46, 47, 30, 31, 32, 39,
                40, 41, 48, 49, 50, 33, 34, 35, 42, 43, 44, 51, 52, 53, 54, 55, 56, 63, 64, 65, 72, 73, 74, 57, 58, 59, 66, 67, 68, 75, 76, 77, 60, 61, 62, 69, 70, 71, 78, 79, 80]
@@ -49,8 +51,8 @@ def train(epoch):
 
     for board_tensor, move_tensor in train_dataLoader:
         optimizer.zero_grad()
-        outputs = model(board_tensor)
-        loss = loss_fn(outputs, move_tensor)
+        outputs = model(board_tensor).cuda()
+        loss = loss_fn(outputs, move_tensor).cuda()
         loss_sum += loss.item() * board_tensor.shape[0]
         loss.backward()
         optimizer.step()
@@ -86,7 +88,7 @@ def test():
 
 plt_idx, plt_loss, plt_accuracy, plt_legal = [], [], [], []
 
-for idx in range(5000):
+for idx in range(200):
     loss_sum = train(idx)
     accuracy, legal_rate = test()
     plt_idx.append(idx)
@@ -95,18 +97,15 @@ for idx in range(5000):
     plt_legal.append(legal_rate)
     print(f"loss:{loss_sum}, accuracy:{accuracy}, legal:{legal_rate}")
 
-    if idx % 500 == 499:
+    if idx % 50 == 49:
         model_path = f"models/test_{idx + 1}.pth"
         torch.save(model.state_dict(), model_path)
-
-# model_path = "models/test_5000.pth"
-# torch.save(model.state_dict(), model_path)
 
 print(plt_legal)
 
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
-ln1 = ax1.plot(plt_idx, plt_loss, "C0", label="loss_sum")
+ln1 = ax1.plot(plt_idx, plt_loss, "C0", label="train loss")
 ax2 = ax1.twinx()
 ln2 = ax2.plot(plt_idx, plt_accuracy, "C1", label="accuracy")
 # ln3 = ax2.plot(plt_idx, plt_legal, "C2", label="legal_rate")
@@ -114,7 +113,8 @@ h1, l1 = ax1.get_legend_handles_labels()
 h2, l2 = ax2.get_legend_handles_labels()
 ax1.legend(h1 + h2, l1 + l2)
 ax1.set_xlabel("epoch")
-ax1.set_ylabel("loss_sum")
+ax1.set_ylabel("train loss")
+ax1.set_ylim(1.5, 5.0)
 ax2.set_ylabel("accuracy")
 
 fig.savefig("img.png")

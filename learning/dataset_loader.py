@@ -18,8 +18,8 @@ class DatasetLoader():
             board_data.append(board)
             move_data.append(move)
 
-        board_tensor = torch.Tensor(board_data)
-        move_tensor = torch.LongTensor(move_data)
+        board_tensor = torch.Tensor(board_data).cuda()
+        move_tensor = torch.LongTensor(move_data).cuda()
 
         dataset = TensorDataset(board_tensor, move_tensor)
         return dataset
