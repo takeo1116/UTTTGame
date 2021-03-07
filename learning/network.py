@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 class Network(nn.Module):
     def forward(self, x):
-        # CNN（現時点での最強）
+        # CNN
         b = F.relu(self.conv1(x))
         b = F.relu(self.conv2(b))
         b = F.relu(self.conv3(b))
@@ -26,7 +26,7 @@ class Network(nn.Module):
     def __init__(self, channels_num):
         super(Network, self).__init__()
         self.channels_num = channels_num
-        self.kernel_coef = 50
+        self.kernel_coef = 30
         k = self.kernel_coef * channels_num
 
         self.conv1 = nn.Conv2d(in_channels=channels_num, out_channels=k, kernel_size=(3, 3), padding=(1, 1)).cuda()
