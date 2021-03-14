@@ -3,7 +3,6 @@
 import torch
 import matplotlib.pyplot as plt
 from torch import nn, optim
-from torch.utils.data import TensorDataset, DataLoader
 from learning.record_processor import RecordProcessor
 from learning.learning_util import make_network
 from learning.dataset_loader import DatasetLoader

@@ -90,5 +90,5 @@ class Game:
         self.agent_names = [agent_name_1, agent_name_2]
         self.players = [constract_agent(
             agent_name_1), constract_agent(agent_name_2)]
-        self.game_state = 0  # 0:ゲーム進行中, 1:player1の勝ち, 2:player2の勝ち
+        self.game_state = 0  # 0:ゲーム進行中, 1:player1の勝ち, 2:player2の勝ち, 3:draw
         self.game_record = []   # 棋譜[(着手したplayer index, 着手したplayerのagent_name, 着手前のflat_board, legal, move)]
