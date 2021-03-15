@@ -13,13 +13,13 @@ class GameParallel:
         def get_prevmove(idx):
             return -1 if len(self.game_records[idx]) <= 0 else self.game_records[idx][-1][4]
         board_infos = [(self.boards[idx].flatten(), self.boards[idx].legal_moves(get_prevmove(idx)))
-                       for idx, state in enumerate(self.game_states) if self.boards[idx].check_state() == 0]
+                       for idx, state in enumerate(self.game_states) if state == 0]
         return (self.now_player, board_infos)
 
     def process_games(self, moves):
         # 手の一覧を入力することで盤面を進める
         processing_boards = [(idx, board) for idx, board in enumerate(
-            self.boards) if board.check_state() == 0]
+            self.boards) if self.game_states[idx] == 0]
         if len(processing_boards) != len(moves):
             print("illegal size of moves")
             return
@@ -35,12 +35,22 @@ class GameParallel:
                 self.game_records[idx].append(
                     (self.now_player, self.now_player, self.boards[idx].flatten(), legal_moves, move))
             else:
+                # print(f"illegal idx={idx}")
                 self.game_states[idx] = self.now_player ^ 3
                 self.game_records[idx].clear()
                 self.game_records[idx].append(
                     (self.now_player, self.now_player, self.boards[idx].flatten(), legal_moves, move))
         self.now_player = self.now_player ^ 3
         return True
+
+    def get_results_and_records(self, player_idx):
+        # 指定されたプレイヤーの棋譜を取得する
+        def pick_player(record, player_idx):
+            record = [data for data in record if data[0] == player_idx]
+            return record
+        records = [pick_player(record, player_idx) for record in self.game_records]
+        results = [0 if state == player_idx else 1 for state in self.game_states]   # とりあえず引き分けは負け扱いにしとく？
+        return [data for data in zip(results, records)]
 
     def __init__(self, parallel_num):
         self.parallel_num = parallel_num
