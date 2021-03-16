@@ -35,7 +35,6 @@ class GameParallel:
                 self.game_records[idx].append(
                     (self.now_player, self.now_player, self.boards[idx].flatten(), legal_moves, move))
             else:
-                # print(f"illegal idx={idx}")
                 self.game_states[idx] = self.now_player ^ 3
                 self.game_records[idx].clear()
                 self.game_records[idx].append(
