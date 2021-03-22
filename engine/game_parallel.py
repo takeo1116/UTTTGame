@@ -47,8 +47,17 @@ class GameParallel:
         def pick_player(record, player_idx):
             record = [data for data in record if data[0] == player_idx]
             return record
+
+        def state_to_result(state, player_idx):
+            if state == player_idx:
+                return 0
+            elif state == player_idx ^ 3:
+                return 1
+            else:
+                return 2
+
         records = [pick_player(record, player_idx) for record in self.game_records]
-        results = [0 if state == player_idx else 1 for state in self.game_states]   # とりあえず引き分けは負け扱いにしとく？
+        results = [state_to_result(state, player_idx) for state in self.game_states]   # 勝ちなら0, 負けなら1, 引き分けなら2を返す
         return [data for data in zip(results, records)]
 
     def __init__(self, parallel_num):

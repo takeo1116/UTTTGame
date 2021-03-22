@@ -2,7 +2,7 @@
 
 import torch
 from torch import nn, optim
-from .network import Network
+from .network import Network, ValueNetwork
 
 
 def convert_board(board, legal):
@@ -73,3 +73,11 @@ def make_network():
     channels_num = 5
     model = Network(channels_num)
     return model
+
+
+def make_value_network():
+    # バリューネットワークを作る
+    channels_num = 5
+    model = ValueNetwork(channels_num)
+    return model
+    
