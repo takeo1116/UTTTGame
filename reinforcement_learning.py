@@ -32,7 +32,7 @@ def pick_legal_moves(outputs, legals):
 models = [make_network(), make_network()]
 value_net = make_value_network()
 models[0].load_state_dict(torch.load("./models/test.pth"))
-models[1].load_state_dict(torch.load("./models/sota.pth"))
+models[1].load_state_dict(torch.load("./models/test.pth"))
 # value_net.load_state_dict(torch.load("./models/values_init.pth"))
 loss_fn = nn.CrossEntropyLoss()
 loss_fn_value = nn.SmoothL1Loss()
@@ -76,11 +76,10 @@ for epoch in range(10000):
         movenum = len(record)
         if result == 0:
             win += 1
-        elif result == 1:
-            lose += 1
         else:
-            # 引き分けを捨てる
-            continue
+            lose += 1
+            result = 1
+
         data_movenum[movenum][result].extend([convert_record({"board": (board if player_idx == 1 else [[0, 2, 1][mark] for mark in board]), "legal": legal, "move": move}) for player_idx, _, board, legal, move in record])
 
     print(f"win={win}, lose={lose}")

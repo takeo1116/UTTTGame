@@ -14,19 +14,17 @@ torch.manual_seed(11)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 input_path = "./datasets/MctsAgent_10000"
-train_datasetLoader = DatasetLoader(input_path, "train.json")
+train_datasetLoader = None
 test_datasetLoader = DatasetLoader(input_path, "test.json")
 
 batch_size = 1024
-train_dataLoader = DataLoader(
-    train_datasetLoader.dataset, batch_size=batch_size, shuffle=True)
+train_dataLoader = None
 test_dataLoader = DataLoader(
     test_datasetLoader.dataset, batch_size=batch_size, shuffle=False)
-print(
-    f"data loaded : {len(train_dataLoader.dataset)} train datas and {len(test_datasetLoader.dataset)} test datas")
+print(f"{len(test_datasetLoader.dataset)} test datas")
 
 model = make_network()
-# model.load_state_dict(torch.load("./models/test_10000.pth"))   # 初期値をロードするとき
+# model.load_state_dict(torch.load("./models/alpha_42.pth"))   # 初期値をロードするとき
 loss_fn = nn.CrossEntropyLoss()
 optimizer = optim.Adagrad(model.parameters(), lr=0.01)
 
@@ -46,6 +44,13 @@ def legal_count(board_tensor, predicted):
 
 def train(epoch):
     # lossの平均値と訓練データに対するaccuracyを返す
+    # 10エポックに一回DatasetLoaderを更新する
+    if epoch % 10 == 0:
+        global train_datasetLoader
+        global train_dataLoader
+        print(f"load part_{(epoch // 10) % 8}")
+        train_datasetLoader = DatasetLoader(input_path, f"part_{(epoch // 10) % 8}.json")
+        train_dataLoader = DataLoader(train_datasetLoader.dataset, batch_size=batch_size, shuffle=False)
     model.train()
     correct = 0
     loss_sum = 0
@@ -117,7 +122,7 @@ for idx in range(10000):
         ax1.legend(h1 + h2, l1 + l2)
         ax1.set_xlabel("epoch")
         ax1.set_ylabel("train loss")
-        ax1.set_ylim(1.5, 5.0)
+        ax1.set_ylim(1.0, 5.0)
         ax2.set_ylabel("accuracy")
 
         fig.savefig(f"img_{idx + 1}.png")

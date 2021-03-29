@@ -6,7 +6,7 @@ from engine.game import Game
 
 # ゲームをbattle_num回シミュレートして、勝率を計算する
 BATTLE_NUM = 100
-agent_names = ["SupervisedLearningAgent", "MctsAgent_1000"]
+agent_names = ["SupervisedLearningAgent", "MctsAgent_5000"]
 def make_game(agent_names):
     # 先攻と後攻を固定で1ゲーム作る
     game = Game(agent_names[0], agent_names[1])
