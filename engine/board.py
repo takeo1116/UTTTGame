@@ -46,8 +46,10 @@ class Board:
         legal_area = prev_move % 9
         legal = []
         if prev_move == -1 or self.grobal_board.flatten()[legal_area] != 0:
+            # legal = [pos for pos, state in enumerate(
+            #     self.flatten()) if state == 0]
             legal = [pos for pos, state in enumerate(
-                self.flatten()) if state == 0]
+                self.flatten()) if state == 0 and self.grobal_board.flatten()[pos // 9] == 0]
         else:
             legal = [legal_area * 9 + pos for pos,
                      state in enumerate(self.flatten()[legal_area * 9: legal_area * 9 + 9]) if state == 0]

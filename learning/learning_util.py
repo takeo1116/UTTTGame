@@ -68,6 +68,26 @@ def convert_record(record):
     return (board_data, move)
 
 
+def pick_moves(outputs):
+    # softmaxで手を選択し、Tensorを返す
+    softmax = nn.Softmax(dim=1).cuda()
+    probs = softmax(outputs)
+    moves = torch.multinomial(probs, 1).cuda()
+    moves = moves.flatten()
+    return moves.tolist()
+
+
+def pick_legal_moves(outputs, legals):
+    # 合法手のなかからsoftmaxで手を選択する
+    softmax = nn.Softmax(dim=1).cuda()
+    probs = softmax(outputs)
+    probs_fixed = torch.Tensor([[prob + 0.001 if idx in legal else 0.0 for idx, prob in enumerate(
+        probs)] for probs, legal in zip(probs.tolist(), legals)])
+    moves = torch.multinomial(probs_fixed, 1).cuda()
+    moves = moves.flatten()
+    return moves.tolist()
+
+
 def make_network():
     # モデルを作る
     channels_num = 5

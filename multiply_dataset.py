@@ -39,10 +39,12 @@ with open(f"{path}/train.json") as f:
     original_traindata = json.load(f)
 
 # n回に分けてセーブする
-n = 8
+n = 10
 data_num = len(original_traindata)
 print(f"data_num = {data_num}")
-for i in range(8):
+for i in range(n):
+    # if i != 0:
+    #     continue
     print(i * (data_num // n), (i + 1) * (data_num // n))
     part = original_traindata[i * (data_num // n): (i + 1) * (data_num // n)]
     new_dataset = multiply_dataset(part)

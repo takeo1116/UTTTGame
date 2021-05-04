@@ -2,6 +2,7 @@
 
 import torch
 import matplotlib.pyplot as plt
+import random
 from torch import nn, optim
 from torch.utils.data import TensorDataset, DataLoader
 from learning.record_processor import RecordProcessor
@@ -25,7 +26,7 @@ print(f"{len(test_datasetLoader.dataset)} test datas")
 
 model = make_network()
 # model.load_state_dict(torch.load("./models/alpha_42.pth"))   # 初期値をロードするとき
-loss_fn = nn.CrossEntropyLoss()
+loss_fn = nn.CrossEntropyLoss(reduction="none")
 optimizer = optim.Adagrad(model.parameters(), lr=0.01)
 
 board_idxes = [0, 1, 2, 9, 10, 11, 18, 19, 20, 3, 4, 5, 12, 13, 14, 21, 22, 23, 6, 7, 8, 15, 16, 17, 24, 25, 26, 27, 28, 29, 36, 37, 38, 45, 46, 47, 30, 31, 32, 39,
@@ -48,8 +49,10 @@ def train(epoch):
     if epoch % 10 == 0:
         global train_datasetLoader
         global train_dataLoader
-        print(f"load part_{(epoch // 10) % 8}")
-        train_datasetLoader = DatasetLoader(input_path, f"part_{(epoch // 10) % 8}.json")
+        dataset_num = 10
+        select = random.choice(range(dataset_num))
+        print(f"load part_{select}")
+        train_datasetLoader = DatasetLoader(input_path, f"part_{select}.json")
         train_dataLoader = DataLoader(train_datasetLoader.dataset, batch_size=batch_size, shuffle=False)
     model.train()
     correct = 0
@@ -59,6 +62,7 @@ def train(epoch):
         optimizer.zero_grad()
         outputs = model(board_tensor).cuda()
         loss = loss_fn(outputs, move_tensor).cuda()
+        loss = loss.mean()
         loss_sum += loss.item() * board_tensor.shape[0]
         loss.backward()
         optimizer.step()

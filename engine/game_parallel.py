@@ -45,8 +45,8 @@ class GameParallel:
     def get_results_and_records(self, player_idx):
         # 指定されたプレイヤーの棋譜を取得する
         def pick_player(record, player_idx):
-            record = [data for data in record if data[0] == player_idx]
-            return record
+            ret = [data for data in record if data[0] == player_idx]
+            return ret
 
         def state_to_result(state, player_idx):
             if state == player_idx:
@@ -59,6 +59,16 @@ class GameParallel:
         records = [pick_player(record, player_idx) for record in self.game_records]
         results = [state_to_result(state, player_idx) for state in self.game_states]   # 勝ちなら0, 負けなら1, 引き分けなら2を返す
         return [data for data in zip(results, records)]
+
+    def get_results_and_records_turn(self, turn):
+        # 指定されたターン数の盤面集を取得する
+        def pick_turn(record):
+            if len(record) <= turn:
+                return "None"
+            return record[turn]
+            
+        records = [pick_turn(record) for record in self.game_records]
+        return [(result, record) for result, record in zip(self.game_states, records) if record != "None" and (result == 1 or result == 2)]
 
     def __init__(self, parallel_num):
         self.parallel_num = parallel_num
