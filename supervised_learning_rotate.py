@@ -6,7 +6,7 @@ import random
 from torch import nn, optim
 from torch.utils.data import TensorDataset, DataLoader
 from learning.record_processor import RecordProcessor
-from learning.learning_util import make_network
+from learning.learning_util import make_network, make_resnet
 from learning.dataset_loader import DatasetLoader
 
 # 乱数のseedを固定
@@ -24,7 +24,8 @@ test_dataLoader = DataLoader(
     test_datasetLoader.dataset, batch_size=batch_size, shuffle=False)
 print(f"{len(test_datasetLoader.dataset)} test datas")
 
-model = make_network()
+# model = make_network()
+model = make_resnet()
 # model.load_state_dict(torch.load("./models/alpha_42.pth"))   # 初期値をロードするとき
 loss_fn = nn.CrossEntropyLoss(reduction="none")
 optimizer = optim.Adagrad(model.parameters(), lr=0.01)

@@ -5,7 +5,7 @@ import torch
 import matplotlib.pyplot as plt
 from torch import nn, optim
 from engine.game_parallel import GameParallel
-from learning.learning_util import make_network, make_value_network, convert_board, convert_record, pick_moves, pick_legal_moves
+from learning.learning_util import make_network, make_value_network, convert_board, convert_record, pick_moves, pick_legal_moves, pick_max_legal_moves
 
 
 # モデルの準備をする（更新するモデルは0とする）
@@ -46,9 +46,12 @@ for epoch in range(10000):
         outputs = models[0 if now_player == learner_idx else 1](boards_tensor)
         
         moves = pick_legal_moves(
-            outputs, [legal for _, legal in board_infos]) if now_player == 1 else pick_legal_moves(outputs, [legal for _, legal in board_infos])
-        # moves = pick_moves(
-        #     outputs) if now_player == 1 else pick_legal_moves(outputs, [legal for _, legal in board_infos])
+            outputs, [legal for _, legal in board_infos]) if now_player == learner_idx else pick_legal_moves(outputs, [legal for _, legal in board_infos])  # 相手側を確率的なポリシーにする
+        # moves = pick_max_legal_moves(
+        #     outputs, [legal for _, legal in board_infos]) if now_player == learner_idx else pick_legal_moves(outputs, [legal for _, legal in board_infos])  # 相手側を確率的なポリシーにする
+        # moves = pick_legal_moves(
+            # outputs, [legal for _, legal in board_infos]) if now_player == learner_idx else pick_max_legal_moves(outputs, [legal for _, legal in board_infos])  # 相手側を決定的なポリシーにする
+
         game_parallel.process_games(moves)
         
         now_player, board_infos = game_parallel.get_nowboards()
@@ -65,13 +68,15 @@ for epoch in range(10000):
         if result == 0:
             win += 1
             reward = 1
+            # continue    # 勝ち試合をスキップ
         elif result == 1:
             lose += 1
             reward = -1
-            # continue    # いったん勝ち試合のみで
+            # continue    # 負け試合をスキップ
         else:
             draw += 1
-            continue
+            reward = -1
+            # continue
         
         traindata.extend([(convert_record({"board": (board if player_idx == 1 else [[0, 2, 1][mark] for mark in board]), "legal": legal, "move": move}), movenum, reward) for player_idx, _, board, legal, move in record])
 
@@ -104,7 +109,11 @@ for epoch in range(10000):
         # print(value_data)
 
         # lossの係数をつくる
-        loss_coef_list = [(reward - value)/turn for turn, reward, value in zip(turn_data, reward_data, value_data)]
+        loss_coef_list = [(reward - value)/turn for turn, reward, value in zip(turn_data, reward_data, value_data)] # ベースラインあり
+        # loss_coef_list = [(reward - min(0.9, value - 0.25))/turn for turn, reward, value in zip(turn_data, reward_data, value_data)] # ベースラインあり + 定数
+        # loss_coef_list = [(reward - 0.25)/turn for turn, reward, value in zip(turn_data, reward_data, value_data)] # ベースライン定数
+        # loss_coef_list = [reward/turn for turn, reward, value in zip(turn_data, reward_data, value_data)] # ベースラインなし
+        # loss_coef_list = [reward for turn, reward, value in zip(turn_data, reward_data, value_data)] # 定数
         loss_coef_tensor = torch.Tensor(loss_coef_list).cuda()
 
         # 学習させる

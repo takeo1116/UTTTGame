@@ -2,7 +2,7 @@
 
 import torch
 from torch import nn, optim
-from .network import Network, ValueNetwork
+from .network import Network, ResNet, ValueNetwork
 
 
 def convert_board(board, legal):
@@ -76,6 +76,13 @@ def pick_moves(outputs):
     moves = moves.flatten()
     return moves.tolist()
 
+def pick_max_legal_moves(outputs, legals):
+    # 合法手のなかからmaxで手を選択する
+    fixed = torch.Tensor([[prob if idx in legal else 0.0 for idx, prob in enumerate(
+        probs)] for probs, legal in zip(outputs.tolist(), legals)])
+    _, moves = torch.max(fixed.data, 1)
+    # print(moves)
+    return moves.tolist()
 
 def pick_legal_moves(outputs, legals):
     # 合法手のなかからsoftmaxで手を選択する
@@ -92,6 +99,12 @@ def make_network():
     # モデルを作る
     channels_num = 5
     model = Network(channels_num)
+    return model
+
+
+def make_resnet():
+    channels_num = 5
+    model = ResNet(channels_num)
     return model
 
 

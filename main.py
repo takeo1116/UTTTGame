@@ -25,17 +25,17 @@ def print_board(flat_board):
 
 
 # 一戦
-# game = Game("MctsAgent_5000", "MctsAgent_5000")
-game = Game("SupervisedLearningAgent", "MctsAgent_2000")
+game = Game("MctsAgent_1", "MctsAgent_5000")
+# game = Game("SupervisedLearningAgent", "MctsAgent_2000")
 # game = Game("SupervisedLearningAgent", "SupervisedLearningAgent")
 records = game.play_for_record()
 # game.print_board()
 
 # 棋譜から評価値を出す
-value_net = make_value_network()
+# value_net = make_value_network()
 # value_net.load_state_dict(torch.load("./models/transfer_2200.pth"))
-value_net.load_state_dict(torch.load("./models/value_learn_fc_3000.pth"))
-value_net.eval()
+# value_net.load_state_dict(torch.load("./models/value_learn_fc_3000.pth"))
+# value_net.eval()
 for player_idx, agent_name, flat_board, legal, move in records:
     print(f"player_idx = {player_idx}, agent_name = {agent_name}")
     print(f"legal = {legal}")
@@ -44,11 +44,11 @@ for player_idx, agent_name, flat_board, legal, move in records:
     print(f"move = {move}")
     print()
 
-    board = flat_board if player_idx == 1 else [[0, 2, 1][mark] for mark in flat_board]
-    converted = convert_board(board, legal)
-    board_tensor = torch.Tensor([converted]).cuda()
-    value_outputs = value_net(board_tensor).cuda()
-    print(f"value = {value_outputs.item()}")
+    # board = flat_board if player_idx == 1 else [[0, 2, 1][mark] for mark in flat_board]
+    # converted = convert_board(board, legal)
+    # board_tensor = torch.Tensor([converted]).cuda()
+    # value_outputs = value_net(board_tensor).cuda()
+    # print(f"value = {value_outputs.item()}")
 
 # record = game.get_record()
 # for rec in record:
