@@ -2,7 +2,7 @@
 
 import torch
 from torch import nn, optim
-from .network import Network, ResNet, ValueNetwork
+from .network import ResNet, ResNetValue
 
 
 def convert_board(board, legal):
@@ -95,22 +95,15 @@ def pick_legal_moves(outputs, legals):
     return moves.tolist()
 
 
-def make_network():
-    # モデルを作る
-    channels_num = 5
-    model = Network(channels_num)
-    return model
-
-
-def make_resnet():
+def make_policynetwork():
     channels_num = 5
     model = ResNet(channels_num)
     return model
 
 
-def make_value_network():
+def make_valuenetwork():
     # バリューネットワークを作る
     channels_num = 5
-    model = ValueNetwork(channels_num)
+    model = ResNetValue(channels_num)
     return model
     

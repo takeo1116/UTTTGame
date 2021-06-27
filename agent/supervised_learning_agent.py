@@ -4,7 +4,7 @@ import random
 import torch
 from torch import nn, optim
 from .agentbase import AgentBase
-from learning.learning_util import convert_board, make_network
+from learning.learning_util import convert_board, make_policynetwork
 
 
 class SupervisedLearningAgent(AgentBase):

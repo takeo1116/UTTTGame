@@ -1,37 +1,15 @@
 # coding:utf-8
 
 import torch
+import json
+import random
+import argparse
 import matplotlib.pyplot as plt
 from torch import nn, optim
 from torch.utils.data import TensorDataset, DataLoader
 from learning.record_processor import RecordProcessor
-from learning.learning_util import make_network
+from learning.learning_util import make_policynetwork
 from learning.dataset_loader import DatasetLoader
-
-# 乱数のseedを固定
-torch.manual_seed(11)
-
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-input_path = "./datasets/MctsAgent_10000"
-train_datasetLoader = DatasetLoader(input_path, "train.json")
-test_datasetLoader = DatasetLoader(input_path, "test.json")
-
-batch_size = 1024
-train_dataLoader = DataLoader(
-    train_datasetLoader.dataset, batch_size=batch_size, shuffle=True)
-test_dataLoader = DataLoader(
-    test_datasetLoader.dataset, batch_size=batch_size, shuffle=False)
-print(
-    f"data loaded : {len(train_dataLoader.dataset)} train datas and {len(test_datasetLoader.dataset)} test datas")
-
-model = make_network()
-# model.load_state_dict(torch.load("./models/test_10000.pth"))   # 初期値をロードするとき
-loss_fn = nn.CrossEntropyLoss()
-optimizer = optim.Adagrad(model.parameters(), lr=0.01)
-
-board_idxes = [0, 1, 2, 9, 10, 11, 18, 19, 20, 3, 4, 5, 12, 13, 14, 21, 22, 23, 6, 7, 8, 15, 16, 17, 24, 25, 26, 27, 28, 29, 36, 37, 38, 45, 46, 47, 30, 31, 32, 39,
-               40, 41, 48, 49, 50, 33, 34, 35, 42, 43, 44, 51, 52, 53, 54, 55, 56, 63, 64, 65, 72, 73, 74, 57, 58, 59, 66, 67, 68, 75, 76, 77, 60, 61, 62, 69, 70, 71, 78, 79, 80]
 
 def legal_count(board_tensor, predicted):
     # 合法手を返した数を調べる
@@ -54,6 +32,7 @@ def train(epoch):
         optimizer.zero_grad()
         outputs = model(board_tensor).cuda()
         loss = loss_fn(outputs, move_tensor).cuda()
+        loss = loss.mean()
         loss_sum += loss.item() * board_tensor.shape[0]
         loss.backward()
         optimizer.step()
@@ -66,7 +45,6 @@ def train(epoch):
     loss_mean = loss_sum / data_num
     accuracy = correct / data_num
     return loss_mean, accuracy
-
 
 def test():
     # テストデータに対する正答率を返す
@@ -90,6 +68,35 @@ def test():
 
     return accuracy, legal_rate
 
+parser = argparse.ArgumentParser(description="")
+parser.add_argument("--dataset_path", type=str, help="データセットのパス", default="./datasets/MctsAgent_10000/")
+parser.add_argument("--output_path", type=str, help="ポリシーを出力するパス", default="./models/")
+parser.add_argument("--batch_size", type=int, help="バッチサイズ", default=8192)
+args = parser.parse_args()
+batch_size = args.batch_size
+dataset_path = args.dataset_path
+output_path = args.output_path
+
+torch.manual_seed(11)
+
+test_datasetLoader = DatasetLoader(dataset_path, "test.json")
+test_dataLoader = DataLoader(test_datasetLoader.dataset, batch_size=batch_size, shuffle=False)
+print(f"loaded {len(test_datasetLoader.dataset)} test datas")
+
+train_datasetLoader = DatasetLoader(dataset_path, "train.json")
+train_dataLoader = DataLoader(train_datasetLoader.dataset, batch_size=batch_size, shuffle=False)
+print(f"loaded {len(train_datasetLoader.dataset)} train datas")
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = make_policynetwork()
+model = model.to(device)
+model = torch.nn.DataParallel(model)
+loss_fn = nn.CrossEntropyLoss(reduction="none")
+optimizer = optim.Adagrad(model.parameters(), lr=0.01)
+
+board_idxes = [0, 1, 2, 9, 10, 11, 18, 19, 20, 3, 4, 5, 12, 13, 14, 21, 22, 23, 6, 7, 8, 15, 16, 17, 24, 25, 26, 27, 28, 29, 36, 37, 38, 45, 46, 47, 30, 31, 32, 39,
+               40, 41, 48, 49, 50, 33, 34, 35, 42, 43, 44, 51, 52, 53, 54, 55, 56, 63, 64, 65, 72, 73, 74, 57, 58, 59, 66, 67, 68, 75, 76, 77, 60, 61, 62, 69, 70, 71, 78, 79, 80]
+
 
 plt_idx, plt_loss, plt_accuracy, plt_legal = [], [], [], []
 
@@ -102,7 +109,7 @@ for idx in range(10000):
     plt_legal.append(legal_rate)
     print(f"loss:{train_loss}, train_accuracy:{train_accuracy}, test_accuracy:{accuracy}, legal:{legal_rate}")
 
-    if idx % 50 == 49:
+    if idx % 20 == 19:
         model_path = f"models/test_{idx + 1}.pth"
         torch.save(model.state_dict(), model_path)
 
@@ -111,13 +118,12 @@ for idx in range(10000):
         ln1 = ax1.plot(plt_idx, plt_loss, "C0", label="train loss")
         ax2 = ax1.twinx()
         ln2 = ax2.plot(plt_idx, plt_accuracy, "C1", label="accuracy")
-        # ln3 = ax2.plot(plt_idx, plt_legal, "C2", label="legal_rate")
         h1, l1 = ax1.get_legend_handles_labels()
         h2, l2 = ax2.get_legend_handles_labels()
         ax1.legend(h1 + h2, l1 + l2)
         ax1.set_xlabel("epoch")
         ax1.set_ylabel("train loss")
-        ax1.set_ylim(1.5, 5.0)
+        ax1.set_ylim(0.5, 5.0)
         ax2.set_ylabel("accuracy")
 
         fig.savefig(f"img_{idx + 1}.png")
