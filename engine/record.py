@@ -9,7 +9,7 @@ class MoveDataResult(Enum):
     LOSE = 2
     DRAW = 3
     ERROR = 4
-    
+
 
 class RecordResult(Enum):
     # 試合結果
@@ -22,7 +22,7 @@ class RecordResult(Enum):
 
 class MoveData:
     # 手
-    # boardは先手後手に関わらず空きが0, 自分が1, 相手が2
+    # flat_boardは先手後手に関わらず空きが0, 自分が1, 相手が2
     def __init__(self, player_idx, is_first, agent_name, flat_board, legal_moves, move, result=MoveDataResult.NOSET):
         self.player_idx = player_idx
         self.is_first = is_first
@@ -40,8 +40,15 @@ class Record:
 
     # レコードの各MoveDataに結果を記録する
     def add_result(self, result=RecordResult.NOSET):
-        for data in self.record:
-            data.result = 
+        for movedata in self.record:
+            if result == RecordResult.PLAYER1WIN:
+                movedata.result = MoveDataResult.WIN if movedata.player_idx == 1 else MoveDataResult.LOSE
+            elif result == RecordResult.PLAYER2WIN:
+                movedata.result = MoveDataResult.LOSE if movedata.player_idx == 1 else MoveDataResult.WIN
+            elif result == RecordResult.DRAW:
+                movedata.result = MoveDataResult.DRAW
+            else:
+                movedata.result = MoveDataResult.ERROR
 
     def __init__(self):
         self.record = []
