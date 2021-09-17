@@ -1,11 +1,14 @@
 # coding:utf-8
 
-from engine.record import MoveData, Record
+from engine.record import MoveData, Record, RecordResult
 from .board import Board
 import time
 
 
 class Game:
+    def make_recordresult(game_state):
+        return [RecordResult.NOSET, RecordResult.PLAYER1WIN, RecordResult.PLAYER2WIN, RecordResult.DRAW][game_state]
+
     def process_game(self):
         # ゲームを1手進める
         flat_board = self.board.flatten()
@@ -13,7 +16,7 @@ class Game:
         # now_playerに手を聞く
         # これを変更したくて、常に自分の石が1になるようにこの段階でしておく、先手かどうかを引数で入れる
         player = self.players[self.now_player - 1]
-        is_first = self.now_player == self.first_player
+        is_first = (self.now_player == self.first_player)
         agent_name = player.get_agentname()
         move = player.request_move(
             flat_board.copy(), legal_moves.copy(), is_first)
@@ -45,6 +48,7 @@ class Game:
             print(type(e))
             print(e)
             return "Exception"
+        self.record.add_result(self.make_recordresult(self.game_state))
         result = ["processing", f"{self.agent_names[0]}(player 1) win",
                   f"{self.agent_names[1]}(player 2) win", "draw"][self.game_state]
         elapsed_time = time.time() - start
