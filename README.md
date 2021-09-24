@@ -21,5 +21,9 @@ Ultimate Tic-Tac-Toeを使って遊ぶリポジトリ
 学習の1st STEPとして教師あり学習をする。UTTTにはプロ棋士はいないので、MCTSエージェントの指し手を教師データとする。  
 テスト実装ではResNetを使って指し手の一致率60％を達成した。
 
+```
+$ python3 -m record_maker.make_record --batch_size 100 --batch_num 1009 --save_path ./path --parallel_num 15
+```
+
 ## 強化学習
 2nd STEPとして強化学習をする。まだテスト中だが強くなってる気がしたので先んじてReDiveを始めておく

@@ -1,8 +1,10 @@
 # coding:utf-8
-from enum import Enum
+
+import json
+from enum import IntEnum
 
 
-class MoveDataResult(Enum):
+class MoveDataResult(IntEnum):
     # その手によって最終的に試合結果がどうなったか
     NOSET = 0
     WIN = 1
@@ -11,7 +13,7 @@ class MoveDataResult(Enum):
     ERROR = 4
 
 
-class RecordResult(Enum):
+class RecordResult(IntEnum):
     # 試合結果
     NOSET = 0
     PLAYER1WIN = 1
@@ -31,6 +33,25 @@ class MoveData:
         self.legal_moves = legal_moves
         self.move = move
         self.result = result
+
+
+class MoveDataEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, MoveData):
+            return {"_type": "MoveData", "value": o.__dict__}
+
+
+class MoveDataDecoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        json.JSONDecoder.__init__(
+            self, object_hook=self.object_hook, *args, **kwargs)
+
+    def object_hook(self, o):
+        if "_type" not in o:
+            return o
+        type = o["_type"]
+        if type == "MoveData":
+            return MoveData(**o["value"])
 
 
 class Record:
