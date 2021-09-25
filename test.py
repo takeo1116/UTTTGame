@@ -7,6 +7,8 @@ from engine.game import Game
 from agent.random_agent import RandomAgent
 from agent.mcts_agent import MctsAgent
 from agent.mixed_agent import MixedAgent
+from learn.util.recordreader import RecordReader
+from learn.util.rotation import multiply_movedatalist
 
 # players = [RandomAgent(), RandomAgent()]
 # players = [MctsAgent(5000), MctsAgent(1000)]
@@ -27,10 +29,10 @@ players = [MixedAgent(), MixedAgent()]
 #         futures.append(executor.submit(games[idx].play))
 
 # record読み込み
-path = "./test/record_0.json"
-with open(path) as f:
-    data = json.load(f, cls=MoveDataDecoder)
-print(f"{data[0]}")
-for movedata in data:
+path = "./learn/records"
+record_reader = RecordReader(path, ["MctsAgent_5000", "RandomAgent"])
+movedatas = record_reader.get_movedatalist()
+
+for movedata in movedatas:
     print(movedata.result == MoveDataResult.WIN)
     print(f"player_idx = {movedata.player_idx}, is_first = {movedata.is_first}, agent_name = {movedata.agent_name}, flat_board = {movedata.flat_board}, legal_moves = {movedata.legal_moves}, move = {movedata.move}, result = {movedata.result}")

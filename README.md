@@ -27,3 +27,14 @@ UTTTGame$ python3 -m learn.make_record --batch_size 5 --batch_num 1 --save_path 
 
 ## 強化学習
 2nd STEPとして強化学習をする。まだテスト中だが強くなってる気がしたので先んじてReDiveを始めておく
+
+
+## Usage
+### 棋譜生成
+```
+UTTTGame$ python3 -m learn.make_record --batch_size 5 --batch_num 1 --save_path ./learn/records/test --parallel_num 15
+```
+### 教師あり学習
+```
+UTTTGame$ python3 -m learn.supervised_learning --output_path ./learn/SL_output_test
+```
