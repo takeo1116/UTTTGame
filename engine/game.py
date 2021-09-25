@@ -17,7 +17,8 @@ class Game:
         # これを変更したくて、常に自分の石が1になるようにこの段階でしておく、先手かどうかを引数で入れる
         player = self.players[self.now_player - 1]
         is_first = (self.now_player == self.first_player)
-        request_board = [mark for mark in flat_board] if self.now_player == 1 else [[0, 2, 1][mark] for mark in flat_board]
+        request_board = [mark for mark in flat_board] if self.now_player == 1 else [
+            [0, 2, 1][mark] for mark in flat_board]
         move = player.request_move(
             request_board, legal_moves.copy(), is_first)
         # 帰ってきた手が有効かどうか調べる（有効じゃない手を打とうとしたら負け）

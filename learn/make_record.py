@@ -3,7 +3,7 @@
 import os
 import argparse
 from agent.mixed_agent import MixedAgent
-from .record_maker import RecordMaker
+from .record_maker.record_maker import RecordMaker
 
 
 parser = argparse.ArgumentParser(description="棋譜データの作成")

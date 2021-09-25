@@ -22,7 +22,7 @@ Ultimate Tic-Tac-Toeを使って遊ぶリポジトリ
 テスト実装ではResNetを使って指し手の一致率60％を達成した。
 
 ```
-$ python3 -m record_maker.make_record --batch_size 100 --batch_num 1009 --save_path ./path --parallel_num 15
+UTTTGame$ python3 -m learn.make_record --batch_size 5 --batch_num 1 --save_path ./learn/records/test --parallel_num 15
 ```
 
 ## 強化学習
