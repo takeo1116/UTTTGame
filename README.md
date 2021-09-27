@@ -32,9 +32,9 @@ UTTTGame$ python3 -m learn.make_record --batch_size 5 --batch_num 1 --save_path 
 ## Usage
 ### 棋譜生成
 ```
-UTTTGame$ python3 -m learn.make_record --batch_size 5 --batch_num 1 --save_path ./learn/records/test --parallel_num 15
+UTTTGame$ python3 -m learn.make_record --batch_size 200 --batch_num 30 --save_path ./learn/records/test --parallel_num 15
 ```
 ### 教師あり学習
 ```
-UTTTGame$ python3 -m learn.supervised_learning --output_path ./learn/SL_output_test
+UTTTGame$ python3 -m learn.supervised_learning --records_path ./learn/records --output_path ./learn/SL_output_test --epoch 20
 ```

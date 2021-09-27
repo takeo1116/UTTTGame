@@ -1,5 +1,6 @@
 # coding:utf-8
 
+import random
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 from engine.record import MoveDataResult
@@ -75,18 +76,37 @@ def make_dataset(movedatalist):
         else:
             return 0
 
-    # movedatalistから教師データ(feature, move, value)を作る
-    features = []
-    moves = []
-    values = []
-    for movedata in movedatalist:
-        features.append(make_feature(movedata))
-        moves.append(movedata.move)
-        values.append(get_value(movedata.result))
+    def make_tensordataset(movedatalist):
+        # movedatalistから教師データ(feature, move, value)を作る
+        features = []
+        moves = []
+        values = []
+        for movedata in movedatalist:
+            features.append(make_feature(movedata))
+            moves.append(movedata.move)
+            values.append(get_value(movedata))
 
-    feature_tensor = torch.Tensor(features).cuda()
-    move_tensor = torch.LongTensor(moves).cuda()
-    value_tensor = torch.Tensor(values).cuda()
+        feature_tensor = torch.Tensor(features).cuda()
+        move_tensor = torch.LongTensor(moves).cuda()
+        value_tensor = torch.Tensor(values).cuda()
 
-    dataset = TensorDataset(feature_tensor, move_tensor, value_tensor)
-    return dataset
+        return TensorDataset(feature_tensor, move_tensor, value_tensor)
+
+    # traindataとtestdataを分ける
+    shuffled = movedatalist.copy()
+    random.shuffle(movedatalist.copy())
+    test_num = len(movedatalist)//10
+    test, train = shuffled[:test_num], shuffled[test_num:]
+
+    train_dataset = make_tensordataset(train)
+    test_dataset = make_tensordataset(test)
+    return (train_dataset, test_dataset)
+
+
+def make_dataloader(movedatalist, batch_size):
+    train_dataset, test_dataset = make_dataset(movedatalist)
+    train_dataloader = DataLoader(train_dataset, batch_size, shuffle=False)
+    test_dataloader = DataLoader(test_dataset, batch_size, shuffle=False)
+    print(
+        f"train : {len(train_dataloader.dataset)} data, test : {len(test_dataloader.dataset)} data")
+    return (train_dataloader, test_dataloader)

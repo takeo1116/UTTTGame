@@ -30,6 +30,7 @@ class RecordReader:
     def get_movedatalist(self):
         if self.movedatalist is None:
             self.movedatalist = self.read_records(self.records_path)
+        print(f"RecordReader : read {len(self.movedatalist)} data")
         return self.movedatalist
 
     def __init__(self, records_path, agentnames=None):
