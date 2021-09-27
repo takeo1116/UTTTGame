@@ -1,5 +1,7 @@
 # coding:utf-8
 
+import multiprocessing
+import concurrent.futures
 import random
 import torch
 from torch.utils.data import TensorDataset, DataLoader
@@ -64,7 +66,7 @@ def make_feature(movedata):
     return [to_model_index(brd) for brd in [my_board, op_board, legal_board, my_chanceboard, op_chanceboard]]
 
 
-def make_dataset(movedatalist):
+def convert_movedata(movedata):
     def get_value(movedata):
         result = movedata.result
         if result == MoveDataResult.WIN:
@@ -75,16 +77,40 @@ def make_dataset(movedatalist):
             return -0.5
         else:
             return 0
+    return (make_feature(movedata), movedata.move, get_value(movedata))
+
+
+def make_dataset(movedatalist):
 
     def make_tensordataset(movedatalist):
+
+        # features = []
+        # moves = []
+        # values = []
+        # for movedata in movedatalist:
+        #     features.append(make_feature(movedata))
+        #     moves.append(movedata.move)
+        #     values.append(get_value(movedata))
+
         # movedatalistから教師データ(feature, move, value)を作る
-        features = []
-        moves = []
-        values = []
-        for movedata in movedatalist:
-            features.append(make_feature(movedata))
-            moves.append(movedata.move)
-            values.append(get_value(movedata))
+        cpu_num = multiprocessing.cpu_count()
+        print(f"cpu_num = {cpu_num}")
+        with concurrent.futures.ProcessPoolExecutor(max_workers=cpu_num) as executor:
+            # futures = []
+            # for movedata in movedatalist:
+            #     futures.append(executor.submit(convert_movedata, movedata))
+            # results = []
+            # for future in futures:
+            #     results.append(future.result())
+
+            results = executor.map(
+                convert_movedata, movedatalist, chunksize=len(movedatalist)//cpu_num)
+            features, moves, values = [], [], []
+            for feature, move, value in results:
+                features.append(feature)
+                moves.append(move)
+                values.append(value)
+            print("check")
 
         feature_tensor = torch.Tensor(features).cuda()
         move_tensor = torch.LongTensor(moves).cuda()
