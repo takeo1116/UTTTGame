@@ -83,29 +83,15 @@ def convert_movedata(movedata):
 def make_dataset(movedatalist):
 
     def make_tensordataset(movedatalist):
-
-        # features = []
-        # moves = []
-        # values = []
-        # for movedata in movedatalist:
-        #     features.append(make_feature(movedata))
-        #     moves.append(movedata.move)
-        #     values.append(get_value(movedata))
-
         # movedatalistから教師データ(feature, move, value)を作る
         cpu_num = multiprocessing.cpu_count()
         print(f"cpu_num = {cpu_num}")
         with concurrent.futures.ProcessPoolExecutor(max_workers=cpu_num) as executor:
-            # futures = []
-            # for movedata in movedatalist:
-            #     futures.append(executor.submit(convert_movedata, movedata))
-            # results = []
-            # for future in futures:
-            #     results.append(future.result())
 
             results = executor.map(
                 convert_movedata, movedatalist, chunksize=len(movedatalist)//cpu_num)
             features, moves, values = [], [], []
+
             for feature, move, value in results:
                 features.append(feature)
                 moves.append(move)
@@ -121,7 +107,7 @@ def make_dataset(movedatalist):
     # traindataとtestdataを分ける
     shuffled = movedatalist.copy()
     random.shuffle(movedatalist.copy())
-    test_num = len(movedatalist)//10
+    test_num = len(movedatalist)//100
     test, train = shuffled[:test_num], shuffled[test_num:]
 
     train_dataset = make_tensordataset(train)

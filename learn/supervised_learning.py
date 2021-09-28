@@ -2,7 +2,7 @@
 
 from learn.util.feature import make_dataloader
 from learn.util.recordreader import RecordReader
-from learn.util.rotation import multiply_movedatalist
+from learn.util.rotation import distinct, multiply_movedatalist
 import torch
 import os
 import argparse
@@ -101,7 +101,7 @@ optimizer = optim.Adagrad(model.parameters(), lr=0.01)
 
 # 棋譜の読み込み
 record_reader = RecordReader(args.records_path, args.teacher)
-movedatalist = multiply_movedatalist(record_reader.get_movedatalist())
+movedatalist = distinct(multiply_movedatalist(record_reader.get_movedatalist()))
 train_dataloader, test_dataloader = make_dataloader(movedatalist, args.batch_size)
 
 # 学習とアウトプット
