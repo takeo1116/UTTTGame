@@ -25,6 +25,10 @@ class RecordResult(IntEnum):
 class MoveData:
     # 手
     # flat_boardは先手後手に関わらず空きが0, 自分が1, 相手が2
+    def get_boardint(self):
+        # flat_boardを162bit整数にして出力する（盤面の一致判定に使う）
+        return sum([mark << (idx * 2) for idx, mark in enumerate(self.flat_board)], 0)
+
     def __init__(self, player_idx, is_first, agent_name, flat_board, legal_moves, move, result=MoveDataResult.NOSET):
         self.player_idx = player_idx
         self.is_first = is_first
