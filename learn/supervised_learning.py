@@ -95,7 +95,7 @@ model = model.to(device)
 model = torch.nn.DataParallel(model)
 if args.init_policy is not None:
     model.load_state_dict(torch.load(args.init_policy), strict=False)
-    print(f"policy {args.init_poilcy} loaded")
+    print(f"policy {args.init_policy} loaded")
 loss_fn = nn.CrossEntropyLoss(reduction="none")
 optimizer = optim.Adagrad(model.parameters(), lr=0.01)
 
