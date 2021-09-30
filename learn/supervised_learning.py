@@ -92,7 +92,7 @@ os.makedirs(os.path.join(args.output_path, "graphs"), exist_ok=True)
 device = "cuda"
 model = make_policynetwork()
 model = model.to(device)
-# model = torch.nn.DataParallel(model)
+model = torch.nn.DataParallel(model)
 if args.init_policy is not None:
     model.load_state_dict(torch.load(args.init_policy), strict=False)
     print(f"policy {args.init_poilcy} loaded")
@@ -116,9 +116,9 @@ for epoch in range(args.epoch):
     plt_legal.append(legal_rate)
     print(f"loss:{train_loss}, train_accuracy:{train_accuracy}, test_accuracy:{test_accuracy}, legal:{legal_rate}")
 
-    if epoch % 20 == 19:
+    if epoch % 10 == 9:
         model_path = f"{args.output_path}/models/test_{epoch + 1}.pth"
-        torch.save(model.state_dict(), model_path)
+        torch.save(model.module.state_dict(), model_path)
 
         fig = plt.figure()
         ax1 = fig.add_subplot(111)
