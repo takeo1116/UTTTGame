@@ -8,8 +8,8 @@ from torch.utils.data import TensorDataset, DataLoader
 from engine.record import MoveDataResult
 
 
-def make_feature(movedata):
-    # movedataから特徴量の形に変換する
+def make_feature(flat_board, legal_moves):
+    # 盤面の情報を特徴量の形に変換する
     # 9*9の盤面で、自分のマーク、相手のマーク、着手可能な場所の3チャネル
     bingo = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6),
              (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6)]
@@ -55,11 +55,11 @@ def make_feature(movedata):
         column = [0, 3, 6, 27, 30, 33, 54, 57, 60]
         return [[flat_board[r + c] for r in row] for c in column]
 
-    painted = paint_won_board(movedata.flat_board)
+    painted = paint_won_board(flat_board)
     my_board = [1 if mark == 1 else 0 for mark in painted]
     op_board = [1 if mark == 2 else 0 for mark in painted]
     legal_board = [
-        1 if pos in movedata.legal_moves else 0 for pos in range(81)]
+        1 if pos in legal_moves else 0 for pos in range(81)]
     my_chanceboard = make_chanceboard(painted, 1)
     op_chanceboard = make_chanceboard(painted, 2)
 
@@ -77,15 +77,13 @@ def convert_movedata(movedata):
             return -0.5
         else:
             return 0
-    return (make_feature(movedata), movedata.move, get_value(movedata))
+    return (make_feature(movedata.flat_board, movedata.legal_moves), movedata.move, get_value(movedata))
 
 
 def make_dataset(movedatalist):
-
     def make_tensordataset(movedatalist):
         # movedatalistから教師データ(feature, move, value)を作る
         cpu_num = multiprocessing.cpu_count()
-        print(f"cpu_num = {cpu_num}")
         with concurrent.futures.ProcessPoolExecutor(max_workers=cpu_num) as executor:
 
             results = executor.map(
@@ -96,7 +94,6 @@ def make_dataset(movedatalist):
                 features.append(feature)
                 moves.append(move)
                 values.append(value)
-            print("check")
 
         feature_tensor = torch.Tensor(features).cuda()
         move_tensor = torch.LongTensor(moves).cuda()
