@@ -56,7 +56,7 @@ class ValuedataMaker:
                     feature_tensor = torch.Tensor(features).cuda()
                     outputs = model(feature_tensor)
                     moves = pick_legalmoves(
-                        outputs, [legal_moves for _, legal_moves in processing_boards])
+                        outputs, [legal_moves for _, legal_moves in processing_boards], self.temp)
                     games.process_games(moves, agent_name)
 
                 processing_boards = games.get_processing_boards()
@@ -74,10 +74,11 @@ class ValuedataMaker:
             with open(path, mode="w") as f:
                 json.dump(movedatalist, f, cls=MoveDataEncoder)
 
-    def __init__(self, model_a, model_b, batch_size, batch_num, save_path, parallel_num=1):
+    def __init__(self, model_a, model_b, batch_size, batch_num, save_path, parallel_num=1, temp=1.0):
         self.model_a = model_a
         self.model_b = model_b
         self.batch_size = batch_size
         self.batch_num = batch_num
         self.save_path = save_path
         self.parallel_num = parallel_num
+        self.temp = temp

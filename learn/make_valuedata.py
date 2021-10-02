@@ -13,6 +13,8 @@ parser.add_argument("--batch_size", type=int,
 parser.add_argument("--batch_num", type=int, default=1, help="ファイルをいくつ作成するか")
 parser.add_argument("--save_path", type=str, default="", help="棋譜を保存するディレクトリのパス")
 parser.add_argument("--parallel_num", type=int, default=128, help="並列で実行するゲームの数")
+parser.add_argument("--temperature", type=float, default=1.0, help="手を選択するときの温度")
+parser.add_argument("--rand_max", type=int, default=70, help="ランダムにする手番のmax")
 parser.add_argument("--policy_a", type=str, help="model_aのポリシーのpath")
 parser.add_argument("--policy_b", type=str, help="model_bのポリシーのpath")
 
@@ -31,5 +33,7 @@ model_b = model_b.to(device)
 model_b = torch.nn.DataParallel(model_b)
 model_b.load_state_dict(torch.load(args.policy_b), strict=False)
 
-valuedata_maker = ValuedataMaker(model_a, model_b, args.batch_size, args.batch_num, args.save_path, args.parallel_num)
-valuedata_maker.generate_valuedata()
+temp = args.temperature
+print(f"temperature = {temp}")
+valuedata_maker = ValuedataMaker(model_a, model_b, args.batch_size, args.batch_num, args.save_path, args.parallel_num, temp)
+valuedata_maker.generate_valuedata(args.rand_max)
