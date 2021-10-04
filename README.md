@@ -36,13 +36,20 @@ UTTTGame$ python3 -m learn.make_record --batch_size 200 --batch_num 30 --save_pa
 ```
 ### 教師あり学習
 ```
-UTTTGame$ python3 -m learn.supervised_learning --records_path ./learn/records --output_path ./learn/SL_output_test --epoch 20
+UTTTGame$ python3 -m learn.supervised_learning_policy --records_path ./learn/records --output_path ./learn/SL_output_test --epoch 20
 ```
 
 ### valuedata生成
 ```
 UTTTGame$ python3 -m learn.make_valuedata --batch_size 200 --policy_a ./policy_a.pth --policy_b ./policy_b.pth --batch_num 30 --save_path ./learn/records/test --parallel_num 128
 ```
+
+### value教師あり学習
+```
+UTTTGame$ python3 -m learn.supervised_learning_value --records_path ./learn/valuedata --output_path ./learn/SL_value_test --epoch 20
+```
+
+UTTTGame$ python3 -m learn.supervised_learning_value --records_path ./learn/records/valuetest --output_path ./learn/SL_value_test --epoch 20
 
 
 UTTTGame$ python3 -m learn.make_valuedata --batch_size 200 --policy_a ./learn/SL_output_test/models/test_100.pth --policy_b ./learn/SL_output_test/models/test_100.pth --batch_num 1 --save_path ./learn/records/valuetest --parallel_num 128

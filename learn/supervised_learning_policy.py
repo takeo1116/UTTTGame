@@ -12,7 +12,7 @@ from learn.network.network import make_policynetwork
 
 
 def train():
-    # 1epoch学習させて、lossの平均値と訓練データに対するaccuracyを返す
+    # 1 epoch学習させて、lossの平均値と訓練データに対するaccuracyを返す
     model.train()
     correct = 0
     loss_sum = 0.0
@@ -117,7 +117,7 @@ for epoch in range(args.epoch):
     print(f"loss:{train_loss}, train_accuracy:{train_accuracy}, test_accuracy:{test_accuracy}, legal:{legal_rate}")
 
     if epoch % 10 == 9:
-        model_path = f"{args.output_path}/models/test_{epoch + 1}.pth"
+        model_path = f"{args.output_path}/models/policy_{epoch + 1}.pth"
         torch.save(model.module.state_dict(), model_path)
 
         fig = plt.figure()

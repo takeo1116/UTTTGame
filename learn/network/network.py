@@ -1,5 +1,6 @@
 # coding:utf-8
 
+import torch
 from torch import nn
 import torch.nn.functional as F
 
@@ -95,6 +96,7 @@ class ValueNetwork(ResNet):
         # h = self.fc(h)
         h = F.relu(self.fc(h))
         h = self.out(h)
+        h = torch.tanh(h)
         return h
 
     def __init__(self, channels_num):
