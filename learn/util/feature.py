@@ -74,7 +74,7 @@ def convert_movedata(movedata):
         elif result == MoveDataResult.LOSE:
             return -1
         elif result == MoveDataResult.DRAW:
-            return -0.5
+            return 0
         else:
             return 0
     return (make_feature(movedata.flat_board, movedata.legal_moves), movedata.move, [get_value(movedata)])
