@@ -95,7 +95,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.0001)
 
 # 棋譜の読み込み
 record_reader = RecordReader(args.records_path)
-movedatalist = distinct((record_reader.get_movedatalist()))
+movedatalist = distinct(record_reader.get_movedatalist())
 train_dataloader, test_dataloader = make_dataloader(
     movedatalist, args.batch_size)
 
