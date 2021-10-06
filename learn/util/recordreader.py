@@ -11,7 +11,7 @@ class RecordReader:
             # file_pathで指定された棋譜ファイルを読んで中身を取り出す
             with open(file_path) as f:
                 datalist = json.load(f, cls=MoveDataDecoder)
-            return [data for data in datalist if self.agentnames is None or data.agent_name in self.agentnames]
+            return [data for data in datalist if self.agentname is None or data.agent_name == self.agentname]
 
         # records_path以下の棋譜を再帰的に全部読み込む
         movedatalist = []
@@ -33,7 +33,7 @@ class RecordReader:
         print(f"RecordReader : read {len(self.movedatalist)} data")
         return self.movedatalist
 
-    def __init__(self, records_path, agentnames=None):
+    def __init__(self, records_path, agentname=None):
         self.records_path = records_path
-        self.agentnames = agentnames
+        self.agentname = agentname
         self.movedatalist = None
