@@ -42,8 +42,7 @@ class Block(nn.Module):
 
 class ResNet(nn.Module):
     def output(self, h):
-        # h = self.fc(h)
-        h = F.relu(self.fc(h))
+        h = self.fc(h)
         return h
 
     def forward(self, x):
@@ -93,8 +92,7 @@ class PolicyNetwork(ResNet):
 
 class ValueNetwork(ResNet):
     def output(self, h):
-        # h = self.fc(h)
-        h = F.relu(self.fc(h))
+        h = self.fc(h)
         h = self.out(h)
         h = torch.tanh(h)
         return h
