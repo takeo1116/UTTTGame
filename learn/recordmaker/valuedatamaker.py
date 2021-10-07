@@ -6,27 +6,15 @@ import torch
 import random
 import multiprocessing
 import concurrent.futures
-from torch import nn
 from engine.parallelgame import ParallelGames
 from engine.record import MoveDataEncoder
 from learn.util.feature import make_feature
+from learn.util.pickmove import pick_legalmoves
 
 
 class ValuedataMaker:
     def play(self, r=random.randrange(40)):
         print(f"r={r}")
-
-        def pick_legalmoves(outputs, legal_moves, temp=1.0):
-            # 合法手のなかからsoftmaxで手を選択する
-            # temp > 0.0
-            beta = 1.0/temp
-            softmax = nn.Softmax(dim=1).cuda()
-            raw_probs = softmax(beta * outputs)
-            probs = torch.Tensor([[prob + 0.001 if idx in legal else 0.0 for idx, prob in enumerate(
-                probs)] for probs, legal in zip(raw_probs.tolist(), legal_moves)])
-            moves = torch.multinomial(probs, 1).cuda()
-            moves = moves.flatten()
-            return moves.tolist()
 
         # 並列で1セットプレイする
         # r-1手目までをmodel_aで指して、r手目をランダムに、r+1手目以降を終局までmodel_bで指す

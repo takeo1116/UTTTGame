@@ -14,13 +14,13 @@ from learn.network.network import make_valuenetwork
 def train():
     # 1 epoch学習させて、lossの平均値と訓練データに対するaccuracyを返す
     model.train()
-
+    loss_sum = 0.0
     for feature_tensor, move_tensor, value_tensor in train_dataloader:
         optimizer.zero_grad()
         outputs = model(feature_tensor).cuda()
         loss = loss_fn(outputs, value_tensor).cuda()
         loss = loss.mean()
-        loss_sum = loss.item() * feature_tensor.shape[0]
+        loss_sum += loss.item() * feature_tensor.shape[0]
         loss.backward()
         optimizer.step()
 
@@ -33,7 +33,6 @@ def train():
 
 def test():
     # テストデータに対するlossを返す
-
     model.eval()
     loss_sum = 0.0
     with torch.no_grad():
