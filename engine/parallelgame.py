@@ -8,10 +8,14 @@ class ParallelGames:
     def make_recordresult(self, game_state):
         return [RecordResult.NOSET, RecordResult.PLAYER1WIN, RecordResult.PLAYER2WIN, RecordResult.DRAW][game_state]
 
+    def make_requestboard(self, flat_board, player_idx):
+        request_board = [mark for mark in flat_board] if player_idx == 1 else [[0, 2, 1][mark] for mark in flat_board]
+        return request_board
+
     def get_processing_boards(self):
         # 進行中の盤面のリストを取得する
         # 全ゲーム終了していたら空リストを返す
-        return [(self.boards[idx].flatten(), self.boards[idx].legal_moves(self.prev_moves[idx])) for idx, state in enumerate(self.game_states) if state == 0]
+        return [(self.make_requestboard(self.boards[idx].flatten(), self.now_player), self.boards[idx].legal_moves(self.prev_moves[idx])) for idx, state in enumerate(self.game_states) if state == 0]
 
     def get_processing_boards_idx(self):
         # 進行中のBoardとindexのリストを取得する
@@ -33,8 +37,7 @@ class ParallelGames:
                 board.mark(move, self.now_player)
                 self.game_states[idx] = board.check_state()
                 flat_board = board.flatten()
-                request_board = [mark for mark in flat_board] if self.now_player == 1 else [
-                    [0, 2, 1][mark] for mark in flat_board]
+                request_board = self.make_requestboard(flat_board, self.now_player)
                 self.records[idx].append(MoveData(
                     self.now_player, is_first, agent_name, request_board, legal_moves, move))
                 self.prev_moves[idx] = move
