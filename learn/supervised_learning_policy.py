@@ -118,7 +118,7 @@ for epoch in range(args.epoch):
 
     if epoch % 10 == 9:
         model_path = f"{args.output_path}/models/policy_{epoch + 1}.pth"
-        torch.save(model.module.state_dict(), model_path)
+        torch.save(model.state_dict(), model_path)
 
         fig = plt.figure()
         ax1 = fig.add_subplot(111)
