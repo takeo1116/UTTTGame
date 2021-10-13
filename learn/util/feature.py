@@ -119,3 +119,12 @@ def make_dataloader(movedatalist, batch_size):
     print(
         f"train : {len(train_dataloader.dataset)} data, test : {len(test_dataloader.dataset)} data")
     return (train_dataloader, test_dataloader)
+
+
+def match_winlose(movedatalist):
+    win = [movedata for movedata in movedatalist if movedata.result == MoveDataResult.WIN]
+    lose = [movedata for movedata in movedatalist if movedata.result == MoveDataResult.LOSE]
+    merged = []
+    for w, l in zip(win, lose):
+        merged += [w, l]
+    return merged

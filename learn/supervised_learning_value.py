@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from learn.util.feature import make_dataloader
+from learn.util.feature import make_dataloader, match_winlose
 from learn.util.recordreader import RecordReader
 from learn.util.rotation import distinct, multiply_movedatalist
 import torch
@@ -95,6 +95,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.0001)
 # 棋譜の読み込み
 record_reader = RecordReader(args.records_path)
 movedatalist = distinct(record_reader.get_movedatalist())
+movedatalist = match_winlose(movedatalist)  # winとloseの数を揃える
 train_dataloader, test_dataloader = make_dataloader(
     movedatalist, args.batch_size)
 
@@ -111,7 +112,7 @@ for epoch in range(args.epoch):
 
     if epoch % 10 == 9:
         model_path = f"{args.output_path}/models/policy_{epoch + 1}.pth"
-        torch.save(model.module.state_dict(), model_path)
+        torch.save(model.state_dict(), model_path)
 
         # lossのグラフ
         fig = plt.figure()
@@ -125,7 +126,6 @@ for epoch in range(args.epoch):
         print(f"windata = {len(dist[0])}, losedata = {len(dist[1])}")
         fig = plt.figure()
         x = [(i - 50) / 50 for i in range(101)]
-        print(dist)
         plt.hist([dist[0], dist[1]], x, label=["win", "lose"])
         plt.legend(loc="upper left")
         fig.savefig(f"{args.output_path}/graphs/distribution_{epoch + 1}.png")
