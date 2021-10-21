@@ -53,7 +53,14 @@ class ValuedataMaker:
 
         return [record.record[r+1] for record in games.records if len(record.record) > r+1]
 
-    def generate_valuedata(self, rand_max=40):
+    def get_valuedata(self, rand_max=70):
+        # parallel_num並列の対戦 × batch_size回をして、movedatalistを返す
+        for idx in range(self.batch_num):
+            movedatalist = sum([self.play(random.randrange(rand_max))
+                                for _ in range(self.batch_size)], [])
+            return movedatalist
+
+    def generate_valuedata(self, rand_max=70):
         # parallel_num並列の対戦 × batch_size回を1ファイルにして、それをbatch_numファイル作る
         for idx in range(self.batch_num):
             movedatalist = sum([self.play(random.randrange(rand_max))
