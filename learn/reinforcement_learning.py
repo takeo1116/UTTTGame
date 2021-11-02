@@ -11,7 +11,7 @@ from learn.util.reinforcementtrainer import ReinfocementTrainer
 
 
 parser = argparse.ArgumentParser(description="自己対戦による強化学習")
-parser.add_argument("--gpu_id", type=int, default=0, help="使用するgpuのid")
+parser.add_argument("--gpu_ids", type=str, default=0, help="使用するgpuのid(カンマ区切り)")
 parser.add_argument("--temperature", type=float,
                     default=1.0, help="modelが手を選択するときの温度")
 parser.add_argument("--policy_batchsize", type=int,
@@ -28,9 +28,9 @@ parser.add_argument("--init_policy", type=str,
                     default=None, help="強化学習の初期ポリシー")
 parser.add_argument("--init_value", type=str, default=None, help="初期value")
 parser.add_argument("--policy_lr", type=float,
-                    default=0.0000001, help="policyの基本学習率")
+                    default=0.000001, help="policyの基本学習率")
 parser.add_argument("--value_lr", type=float,
-                    default=0.0000001, help="valueの基本学習率")
+                    default=0.000001, help="valueの基本学習率")
 args = parser.parse_args()
 
 # outputするディレクトリの生成
@@ -40,30 +40,31 @@ os.makedirs(os.path.join(args.output_path, "graphs"), exist_ok=True)
 # os.makedirs(os.path.join(args.output_path, "log"), exist_ok=True)
 
 # モデルのロード
-gpu_id = args.gpu_id
-device = torch.device(f"cuda:{gpu_id}")
+gpu_ids = [int(gpu_id) for gpu_id in args.gpu_ids.split(',')]
+print(f"gpu_ids = {gpu_ids}")
+device = torch.device(f"cuda:{gpu_ids[0]}")
 slpolicy = make_policynetwork()
 slpolicy.to(device)
-slpolicy = torch.nn.DataParallel(slpolicy, device_ids=[gpu_id])
+slpolicy = torch.nn.DataParallel(slpolicy, device_ids=gpu_ids)
 learner = make_policynetwork()
 learner.to(device)
-learner = torch.nn.DataParallel(learner, device_ids=[gpu_id])
+learner = torch.nn.DataParallel(learner, device_ids=gpu_ids)
 enemy = make_policynetwork()
 enemy.to(device)
-enemy = torch.nn.DataParallel(enemy, device_ids=[gpu_id])
+enemy = torch.nn.DataParallel(enemy, device_ids=gpu_ids)
 enemy.eval()
 
 if args.init_policy is not None:
-    slpolicy.load_state_dict(torch.load(args.init_policy))
-    learner.load_state_dict(torch.load(args.init_policy))
-    enemy.load_state_dict(torch.load(args.init_policy))
-
+    slpolicy.load_state_dict(torch.load(args.init_policy), strict=False)
+    learner.load_state_dict(torch.load(args.init_policy), strict=False)
+    enemy.load_state_dict(torch.load(args.init_policy), strict=False)
+    
 value = make_valuenetwork()
 value.to(device)
-value = torch.nn.DataParallel(value, device_ids=[gpu_id])
+value = torch.nn.DataParallel(value, device_ids=gpu_ids)
 
 if args.init_value is not None:
-    value.load_state_dict(torch.load(args.init_value))
+    value.load_state_dict(torch.load(args.init_value), strict=False)
 
 plt_epochs, plt_winrates = [], []
 alpha = 0.0000001
@@ -101,17 +102,21 @@ for epoch in range(10000):
 
     # 強さチェック
     print("check winrate")
-    win_epoch, lose_epoch, draw_epoch = trainer.check_winrate(args.policy_batchsize)
+    win_epoch, lose_epoch, draw_epoch = trainer.check_winrate(8000)
     print(f"win = {win_epoch}, lose = {lose_epoch}, draw = {draw_epoch}")
 
     plt_epochs.append(epoch)
     plt_winrates.append(win_epoch / (win_epoch + lose_epoch + draw_epoch))
 
+    # enemyのモデルをセーブする
+    state_dict = trainer.save_lerner()
+
     if epoch % 10 == 9:
-        # policyとvalueのセーブ
+        # policyのセーブ
         policy_path = f"{args.output_path}/models/policy_{epoch + 1}.pth"
-        value_path = f"{args.output_path}/models/value_{epoch + 1}.pth"
         torch.save(learner.state_dict(), policy_path)
+        # valueのセーブ
+        value_path = f"{args.output_path}/models/value_{epoch + 1}.pth"
         torch.save(value.state_dict(), value_path)
 
         # グラフ出力
@@ -123,7 +128,3 @@ for epoch in range(10000):
         ax1.set_xlabel("epoch")
         ax1.set_ylabel("win rate")
         fig.savefig(f"{args.output_path}/graphs/img_{epoch + 1}.png")
-
-        # enemyのモデルを入れ替える
-        state_dict = trainer.save_lerner()
-        trainer.change_enemy()

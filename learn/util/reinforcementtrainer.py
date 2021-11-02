@@ -59,10 +59,10 @@ class ReinfocementTrainer():
                 games = self.play_parallelgames(
                     batch_size // 2, first_model, second_model, temp, first_name, second_name)
                 movedatalist += games.get_movedatalist()
-            win += sum([1 if state ==
-                        learner_idx else 0 for state in games.game_states])
-            lose += sum([1 if state == learner_idx ^
-                         3 else 0 for state in games.game_states])
+                win += sum([1 if state ==
+                            learner_idx else 0 for state in games.game_states])
+                lose += sum([1 if state == learner_idx ^
+                            3 else 0 for state in games.game_states])
             print(f"win = {win}, lose = {lose}, draw = {batch_size - win - lose}")
 
         with concurrent.futures.ProcessPoolExecutor(max_workers=self.cpu_num) as executor:
