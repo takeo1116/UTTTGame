@@ -7,6 +7,7 @@ import torch
 from torch.utils.data import TensorDataset, DataLoader
 from engine.record import MoveDataResult
 
+torch.set_num_threads(1)
 
 def make_feature(flat_board, legal_moves):
     # 盤面の情報を特徴量の形に変換する
@@ -78,6 +79,21 @@ def convert_movedata(movedata):
         else:
             return 0
     return (make_feature(movedata.flat_board, movedata.legal_moves), movedata.move, [get_value(movedata)])
+
+def make_tensordatasetlist(movedatalist, bin_num):
+    features, moves, values = [[] for _ in range(bin_num)], [[] for _ in range(bin_num)], [[] for _ in range(bin_num)]
+    for idx, movedata in enumerate(movedatalist):
+        feature, move, value = convert_movedata(movedata)
+        features[idx % bin_num].append(feature)
+        moves[idx % bin_num].append(move)
+        values[idx % bin_num].append(value)
+
+    datasetlist = []
+    for fs, ms, vs in zip(features, moves, values):
+        data = TensorDataset(torch.Tensor(fs), torch.LongTensor(ms), torch.Tensor(vs))
+        datasetlist.append(data)
+
+    return datasetlist
 
 
 def make_dataset(movedatalist):
