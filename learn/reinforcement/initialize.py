@@ -16,7 +16,7 @@ parser.add_argument("--proc_name", type=str,
 parser.add_argument("--output_path", type=str,
                     default="./RL_output", help="学習に使うディレクトリ")
 parser.add_argument("--bin_num", type=int,
-                    default=100, help="学習データを分けるディレクトリの数")
+                    default=10, help="学習データを分けるディレクトリの数")
 parser.add_argument("--init_model", type=str,
                     default=None, help="学習の初期状態")       
 args = parser.parse_args()

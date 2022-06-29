@@ -30,13 +30,13 @@ parser.add_argument("--device", type=str,
 parser.add_argument("--input_path", type=str,
                     default="./RL_output", help="学習に使うディレクトリ")
 parser.add_argument("--bin_num", type=int,
-                    default=100, help="学習データを分けるディレクトリの数")
+                    default=10, help="学習データを分けるディレクトリの数")
 parser.add_argument("--bin_threshold", type=int,
                     default=50000, help="学習するデータ量の閾値")
 parser.add_argument("--bin_max", type=int,
                     default=150000, help="学習を打ち切るデータ量の閾値")
 parser.add_argument("--batch_size", type=int,
-                    default=2500, help="1バッチに含まれる教師データの数の目安")
+                    default=1000, help="1バッチに含まれる教師データの数の目安")
 parser.add_argument("--remove_rate", type=float,
                     default=1.1, help="学習データを消す確率")
 parser.add_argument("--lr", type=float,
@@ -87,8 +87,10 @@ def train(datasets):
         value_data = sum(v.tolist(), [])
         coef_tensor = torch.Tensor([(reward - val) for reward, val in zip(sum(reward_tensor.tolist(), []), value_data)]).to(args.device)
 
+        # coef_tensor = torch.Tensor([-(reward - val) for reward, val in zip(sum(reward_tensor.tolist(), []), value_data)]).to(args.device) # 報酬逆
+
         loss_p = loss_fn_p(p, move_tensor).to(args.device)
-        loss_p * coef_tensor
+        # loss_p * coef_tensor  # ここがコメントになってたらベースラインオフ（全部正の報酬）
         loss_v = loss_fn_v(v, reward_tensor).to(args.device)
         loss = loss_p.mean() + loss_v.mean()
         loss.backward()
@@ -107,12 +109,16 @@ for epoch in range(1000000):
             bin_size = 0
             for path in datapaths:
                 with open(path, "rb") as p:
-                    dataset = pickle.load(p)
-                    datasets.append(dataset)
-                    bin_size += len(dataset)
-                    if args.bin_max < bin_size:
-                        print(f"stop reading")
-                        break
+                    try:
+                        dataset = pickle.load(p)
+                        datasets.append(dataset)
+                        bin_size += len(dataset)
+                        if args.bin_max < bin_size:
+                            print(f"stop reading")
+                            break
+                    except Exception as e:
+                        # 読み込みに失敗したらスルー
+                        print(f"exception in loading pickle: {e}")
             
             if bin_size < args.bin_threshold:
                 print(f"not learned ({bin_size} data)")

@@ -70,6 +70,6 @@ class Game:
         self.first_player = first_player
         self.board = Board()
         self.prev_move = -1
-        self.now_player = 1
+        self.now_player = first_player
         self.game_state = 0  # 0:ゲーム進行中, 1:player1の勝ち, 2:player2の勝ち, 3:draw
         self.record = Record()   # 棋譜
